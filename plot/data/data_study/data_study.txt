@@ -1,0 +1,4 @@
+Video shapes are different: sens_video_shape = (36, 64, 324), lab_video_shape = (36, 64, 300)
+Response shapes are: sens_response_shape = (7863, 324), lab_response_shape = (2370, 34)
+Behavior shapes are different: sens_behavior_shape = (2, 324), lab_behavior_shape = (2, 300)
+Pupil center shapes are different: lab_pupil_center_shape = (2, 300), sens_pupil_center_shape = (2, 324)

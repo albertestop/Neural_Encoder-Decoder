@@ -1,0 +1,196 @@
+SENSORIUM DATA STUDY
+
+OVERALL MOUSE STATISTICS:
+Mean number of trials: 714.5
+Mean number of trial frames: 298.8807936510066 ± σ = 15.494497025693482 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 29.121272226376256 ± σ = 23.931326547233482 (within a trial)
+Mean number of spikes in a trial: 4.793091778140062 ± σ = 1.8089575809856306 (from trial to trial)
+Mean peak differences in adjacent neurons: 29.792493053655924 ± σ = 7.826034278351886 (from trial to trial)
+Behavior:
+Mean speed: 1.2791842590171265 ± σ = 1.0281403422549702 (within a trial)
+Mean trial stop time (frames): 180.33189573551502 ± σ = 76.91019478865702 (from trial to trial)
+Mean pupil dilation: 48.08587279758139 ± σ = 4.438791689192472 (within a trial)
+Pupil center:
+Mean x position: 149.23222024153932 ± σ = 2.600561059939554 (within a trial)
+Mean y position: 146.09019193261756 ± σ = 2.6195909353528424 (within a trial)
+
+OLD MOUSE STATISTICS:
+Mean number of trials: 718.0
+Mean number of trial frames: 298.8382662895973 ± σ = 15.520531022345779 (from trial to trial)
+Mean peak differences in adjacent neurons: 30.167377471923828 ± σ = 8.230731296539307 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 29.474000549316408 ± σ = 24.121688461303712 (within a trial)
+Mean number of spikes in a trial: 6.106333745306039 ± σ = 0.5916161311236092 (from trial to trial)
+Behavior:
+Mean speed: 2.0623736679553986 ± σ = 1.5894719541072846 (within a trial)
+Mean trial stop time (frames): 168.4575582267309 ± σ = 82.45953022234286 (from trial to trial)
+Mean pupil dilation: 47.42538986206055 ± σ = 4.057990884780883 (within a trial)
+Pupil center:
+Mean x position: 152.0515884399414 ± σ = 2.2957913875579834 (within a trial)
+Mean y position: 148.70643615722656 ± σ = 2.5416905879974365 (within a trial)
+
+NEW MOUSE STATISTICS:
+Mean number of trials: 711.0
+Mean number of trial frames: 298.92332101241584 ± σ = 15.468463029041189 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 28.768543903436097 ± σ = 23.74096463316325 (within a trial)
+Mean number of spikes in a trial: 3.4798498109740854 ± σ = 3.0262990308476523 (from trial to trial)
+Mean peak differences in adjacent neurons: 29.417608635388035 ± σ = 7.421337260164468 (from trial to trial)
+Behavior:
+Mean speed: 0.4959948500788542 ± σ = 0.46680873040265547 (within a trial)
+Mean trial stop time (frames): 192.20623324429917 ± σ = 71.36085935497115 (from trial to trial)
+Mean pupil dilation: 48.74635573310223 ± σ = 4.819592493604062 (within a trial)
+Pupil center:
+Mean x position: 146.4128520431372 ± σ = 2.9053307323211257 (within a trial)
+Mean y position: 143.47394770800855 ± σ = 2.6974912827082482 (within a trial)
+
+dynamic29156 MOUSE STATISTICS:
+Mean number of trials: 720
+Mean number of trial frames: 296.6125 ± σ = 21.193450491838274 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 28.122509002685547 ± σ = 22.635730743408203 (within a trial)
+Mean number of spikes in a trial: 6.260326687574671 ± σ = 0.8157660994205653 (from trial to trial)
+Mean peak differences in adjacent neurons: 28.75290870666504 ± σ = 7.321322917938232 (from trial to trial)
+Behavior:
+Mean speed: 5.881187438964844 ± σ = 3.5948219299316406 (within a trial)
+Mean trial stop time (frames): 130.2111111111111 ± σ = 110.89419325990623 (from trial to trial)
+Mean pupil dilation: 52.09074401855469 ± σ = 3.2814228534698486 (within a trial)
+Pupil center:
+Mean x position: 119.58448028564453 ± σ = 1.8783340454101562 (within a trial)
+Mean y position: 120.01437377929688 ± σ = 2.3210041522979736 (within a trial)
+
+dynamic29228 MOUSE STATISTICS:
+Mean number of trials: 704
+Mean number of trial frames: 303.51278409090907 ± σ = 7.962793892034354 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 28.204944610595703 ± σ = 23.031408309936523 (within a trial)
+Mean number of spikes in a trial: 5.639646197883222 ± σ = 0.41797517207233376 (from trial to trial)
+Mean peak differences in adjacent neurons: 28.8721981048584 ± σ = 7.500296592712402 (from trial to trial)
+Behavior:
+Mean speed: 0.3156398832798004 ± σ = 0.4748844802379608 (within a trial)
+Mean trial stop time (frames): 181.75426136363637 ± σ = 57.71044108521326 (from trial to trial)
+Mean pupil dilation: 46.633853912353516 ± σ = 4.453505992889404 (within a trial)
+Pupil center:
+Mean x position: 152.93080139160156 ± σ = 2.1984028816223145 (within a trial)
+Mean y position: 140.9202423095703 ± σ = 2.382524251937866 (within a trial)
+
+dynamic29234 MOUSE STATISTICS:
+Mean number of trials: 729
+Mean number of trial frames: 294.80109739369 ± σ = 19.832154376623425 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 29.04913902282715 ± σ = 23.244829177856445 (within a trial)
+Mean number of spikes in a trial: 5.949408296514847 ± σ = 0.4892708785641679 (from trial to trial)
+Mean peak differences in adjacent neurons: 29.62660789489746 ± σ = 7.548567771911621 (from trial to trial)
+Behavior:
+Mean speed: 1.3144253492355347 ± σ = 1.1673328876495361 (within a trial)
+Mean trial stop time (frames): 175.1289437585734 ± σ = 77.27314139056232 (from trial to trial)
+Mean pupil dilation: 49.233699798583984 ± σ = 4.125215530395508 (within a trial)
+Pupil center:
+Mean x position: 155.6048583984375 ± σ = 3.1330831050872803 (within a trial)
+Mean y position: 156.26596069335938 ± σ = 2.69012713432312 (within a trial)
+
+dynamic29513 MOUSE STATISTICS:
+Mean number of trials: 714
+Mean number of trial frames: 304.61764705882354 ± σ = 9.050018001983027 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 30.31024932861328 ± σ = 25.111997604370117 (within a trial)
+Mean number of spikes in a trial: 6.639802420772767 ± σ = 0.6066000705394555 (from trial to trial)
+Mean peak differences in adjacent neurons: 30.900964736938477 ± σ = 8.981334686279297 (from trial to trial)
+Behavior:
+Mean speed: 0.4828914403915405 ± σ = 0.5483443737030029 (within a trial)
+Mean trial stop time (frames): 199.4313725490196 ± σ = 84.72277362967685 (from trial to trial)
+Mean pupil dilation: 38.85713577270508 ± σ = 4.476357460021973 (within a trial)
+Pupil center:
+Mean x position: 180.29910278320312 ± σ = 1.5761568546295166 (within a trial)
+Mean y position: 179.2300262451172 ± σ = 3.086880922317505 (within a trial)
+
+dynamic29514 MOUSE STATISTICS:
+Mean number of trials: 723
+Mean number of trial frames: 294.6473029045643 ± σ = 19.564238349249816 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 31.68316078186035 ± σ = 26.584476470947266 (within a trial)
+Mean number of spikes in a trial: 6.042485123784689 ± σ = 0.6284684350215236 (from trial to trial)
+Mean peak differences in adjacent neurons: 32.684207916259766 ± σ = 9.80213451385498 (from trial to trial)
+Behavior:
+Mean speed: 2.3177242279052734 ± σ = 2.1619760990142822 (within a trial)
+Mean trial stop time (frames): 155.76210235131396 ± σ = 81.69710174635568 (from trial to trial)
+Mean pupil dilation: 50.31151580810547 ± σ = 3.9534525871276855 (within a trial)
+Pupil center:
+Mean x position: 151.8386993408203 ± σ = 2.6929800510406494 (within a trial)
+Mean y position: 147.10157775878906 ± σ = 2.2279164791107178 (within a trial)
+
+dynamic29515 MOUSE STATISTICS:
+Mean number of trials: 711
+Mean number of trial frames: 296.7679324894515 ± σ = 20.969159218753475 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 31.998190956336295 ± σ = 26.885439828131464 (within a trial)
+Mean number of spikes in a trial: 3.4575856264263916 ± σ = 3.031028166021763 (from trial to trial)
+Mean peak differences in adjacent neurons: 32.773044911896456 ± σ = 8.134361320384917 (from trial to trial)
+Behavior:
+Mean speed: 0.2957263447962448 ± σ = 0.2643762922963447 (within a trial)
+Mean trial stop time (frames): 188.72011251758087 ± σ = 81.59039150834631 (from trial to trial)
+Mean pupil dilation: 38.796222130147406 ± σ = 4.909367420471577 (within a trial)
+Pupil center:
+Mean x position: 156.07356075984444 ± σ = 1.684436671349612 (within a trial)
+Mean y position: 152.03286502547894 ± σ = 1.8707077299499115 (within a trial)
+
+dynamic29623 MOUSE STATISTICS:
+Mean number of trials: 682
+Mean number of trial frames: 295.01026392961876 ± σ = 19.662881958395957 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 22.467751491307773 ± σ = 18.560314030912753 (within a trial)
+Mean number of spikes in a trial: 3.53768669612568 ± σ = 3.1364370931358367 (from trial to trial)
+Mean peak differences in adjacent neurons: 23.00618112789304 ± σ = 7.095493269834265 (from trial to trial)
+Behavior:
+Mean speed: 0.5835303847273967 ± σ = 0.5777699204121471 (within a trial)
+Mean trial stop time (frames): 163.4017595307918 ± σ = 61.291069394487536 (from trial to trial)
+Mean pupil dilation: 57.79891481591895 ± σ = 4.213140868142492 (within a trial)
+Pupil center:
+Mean x position: 145.32312131996252 ± σ = 3.2848904656365825 (within a trial)
+Mean y position: 126.34856917265888 ± σ = 3.5889488133988037 (within a trial)
+
+dynamic29647 MOUSE STATISTICS:
+Mean number of trials: 711
+Mean number of trial frames: 304.45710267229254 ± σ = 8.252216309853987 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 23.984670645253352 ± σ = 18.276162944989114 (within a trial)
+Mean number of spikes in a trial: 3.0572034675772883 ± σ = 2.596973475546747 (from trial to trial)
+Mean peak differences in adjacent neurons: 24.358325197134725 ± σ = 5.161486640039923 (from trial to trial)
+Behavior:
+Mean speed: 0.3685635982287611 ± σ = 0.28125014723102204 (within a trial)
+Mean trial stop time (frames): 211.05344585091422 ± σ = 62.27065339582288 (from trial to trial)
+Mean pupil dilation: 46.28666464844824 ± σ = 5.3600553111616565 (within a trial)
+Pupil center:
+Mean x position: 176.71739679510782 ± σ = 3.1927137696634347 (within a trial)
+Mean y position: 148.34008069039945 ± σ = 2.7366002555488094 (within a trial)
+
+dynamic29712 MOUSE STATISTICS:
+Mean number of trials: 739
+Mean number of trial frames: 294.72259810554806 ± σ = 19.496994411569176 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 28.851696806920867 ± σ = 23.608046569842717 (within a trial)
+Mean number of spikes in a trial: 3.5384604633333225 ± σ = 3.108456614500675 (from trial to trial)
+Mean peak differences in adjacent neurons: 29.44938119885606 ± σ = 7.488363290800959 (from trial to trial)
+Behavior:
+Mean speed: 0.7734424520972188 ± σ = 0.6447794195741824 (within a trial)
+Mean trial stop time (frames): 203.28281461434372 ± σ = 88.35852274075062 (from trial to trial)
+Mean pupil dilation: 53.9346001415994 ± σ = 5.481278602451268 (within a trial)
+Pupil center:
+Mean x position: 134.4701359501468 ± σ = 3.0674132715706595 (within a trial)
+Mean y position: 145.07124427432393 ± σ = 2.8163504362778333 (within a trial)
+
+dynamic29755 MOUSE STATISTICS:
+Mean number of trials: 712
+Mean number of trial frames: 303.65870786516854 ± σ = 8.961063246633339 (from trial to trial)
+Responses:
+Mean amplitude of the responses spikes: 36.54040961736221 ± σ = 31.374859791940228 (within a trial)
+Mean number of spikes in a trial: 3.808312801407745 ± σ = 3.2585998050332385 (from trial to trial)
+Mean peak differences in adjacent neurons: 37.50111074115988 ± σ = 9.226981779762273 (from trial to trial)
+Behavior:
+Mean speed: 0.4587114705446495 ± σ = 0.5658678724995816 (within a trial)
+Mean trial stop time (frames): 194.57303370786516 ± σ = 63.29365973544846 (from trial to trial)
+Mean pupil dilation: 46.91537692939716 ± σ = 4.134120265793314 (within a trial)
+Pupil center:
+Mean x position: 119.4800453906245 ± σ = 3.2971994833853393 (within a trial)
+Mean y position: 145.57697937718154 ± σ = 2.474849178365885 (within a trial)

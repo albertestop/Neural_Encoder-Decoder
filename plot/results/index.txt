@@ -1,0 +1,4 @@
+retrain_lab_001: Readout retrain with ESPM113 data.
+retrain_sens_001: Readout retrain with sens data already used to train the model.
+retrain_sens_rand_001: Readout retrain with sens data, but shuffling neurons in target raster plots.
+

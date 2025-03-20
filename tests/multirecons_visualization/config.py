@@ -1,0 +1,9 @@
+recons_path = [None] * 8
+recons_path[0] = 'Clopath/reconstructions/results/2/dynamic29755/97'
+recons_path[1] = "Clopath/reconstructions/results/3/dynamic29755/97"
+recons_path[2] = "Clopath/reconstructions/results/4/dynamic29755/97"
+recons_path[3] = "Clopath/reconstructions/results/5/dynamic29755/97"
+recons_path[4] = "Clopath/reconstructions/results/6/dynamic29712/201"
+recons_path[5] = "Clopath/reconstructions/results/7/dynamic29712/201"
+recons_path[6] = "Clopath/reconstructions/results/8/dynamic29712/262"
+recons_path[7] = "Clopath/reconstructions/results/9/dynamic29712/262"

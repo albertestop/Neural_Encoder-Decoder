@@ -1,0 +1,5 @@
+
+GT Response correlation with response predictions: 0.5442251408807389
+GT Response correlation with response predictions made with no speed data: 0.5441532920921589
+GT Response correlation with response predictions made with 1 missing pixel: 0.544303562878012
+Response predictions made with no eye data correlation with response predictions made with 1 missing pixel: 0.9999321093359765

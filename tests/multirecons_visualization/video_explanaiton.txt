@@ -1,0 +1,9 @@
+For each pair of videos, the left one is the reconstruction with the original responses 
+and the right one is the reconstruction using the expected responses (the responses predicted by the model)
+
+From top left to bottom right, recons with: 
+
+- model which had seen the trial during training using original responses
+- model which hadn’t seen the trial during training using
+- model which had seen the trial during training
+- model which had seen the trial during training
