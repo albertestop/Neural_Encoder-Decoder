@@ -3,8 +3,8 @@ from src import constants
 import torch
 from pathlib import Path
 
-mouse_indices = [0, 1, 2, 3, 4]
-folds = '0'   # '0,1,2' // 'all'
+mouse_indices = [0]
+folds = '3'   # '0,1,2' // 'all'
 experiment = Path('new_experiment')
 iter_par = 2
 image_size = (64, 64)

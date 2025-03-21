@@ -1,8 +1,5 @@
 import os
 
-from src.utils import get_lr
-from src import constants
-
 
 image_size = (64, 64)
 batch_size = 32
@@ -15,20 +12,23 @@ exp_directory = '/home/adamranson/data/Repository/'
 data = dict(
     session = session,
     session_dir = os.path.join(exp_directory, animal, session),
-    mouse_run = '000',
+    mouse_run = '001',
     stim_eye = 'Left'   # Right or Left
 )
 
 videos_params = dict(
     videos_dir = '/home/adamranson/data/vid_for_decoder/all_movie_clips_bv_sets/001/',
+    freq = 30
 )
 
 response_params = dict(
     has_data = True,
     keep_only_spikes = False,
-    responses_renorm = False,
+    downscale = True,
+    upscale = False,    # Not compatible with downscale
+    resample = True,
+    responses_renorm = True,
     renorm = 'sens_renorm'   # sens_renorm/abs_mean/mean/
-
 )
 
 behavior_params = dict(

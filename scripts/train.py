@@ -161,6 +161,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     # Pasar mice_indexes al crear el dataset concatenado
     train_dataset = ConcatMiceVideoDataset(train_datasets)
     print(f"Tamaño del dataset de entrenamiento: {len(train_dataset)}")
+    print_detailed_gpu_memory()
 
     print("Creando datasets de validación...")
     val_datasets = []
@@ -176,6 +177,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         )
     val_dataset = ConcatMiceVideoDataset(val_datasets)
     print(f"Tamaño del dataset de validación: {len(val_dataset)}")
+    print_detailed_gpu_memory()
 
     print("Creando DataLoaders...")
     train_loader = DataLoader(
@@ -191,6 +193,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         shuffle=False,
     )
     print("DataLoaders creados.")
+    print_detailed_gpu_memory()
 
     for num_epochs, stage in zip(config["num_epochs"], config["stages"]):
         print(f"\nIniciando stage: {stage} por {num_epochs} épocas")

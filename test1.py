@@ -25,12 +25,8 @@ working_dir = os.path.join(os.curdir[:-9])
 sys.path.append(working_dir)
 from proc_resources import response_proc, video_proc, behavior_proc, pupil_pos_proc
 
-with open('/home/adamranson/data/Repository/ESMT204/2025-03-05_02_ESMT204/recordings/s2p_ch0.pickle', 'rb') as file:
-    file = pickle.load(file)
-responses = np.array(file['Spikes']).mean(axis=0)
-time = np.array(file['t'])
-trial_time = np.array(pd.read_csv('/home/adamranson/data/Repository/ESMT204/2025-03-05_02_ESMT204/2025-03-05_02_ESMT204_all_trials.csv')['time'])
+tiers_lab = np.load(str(constants.sensorium_dir / constants.lab_mice[0] / "meta" / "trials" / "tiers.npy"))
+tiers_sens = np.load(str(constants.sensorium_dir / constants.new_mice[0] / "meta" / "trials" / "tiers.npy"))
 
-for i in range(30):
-    responses = np.load('/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-05_02_ESMT204_000/data/responses/' + str(i) + '.npy')
-    print(responses.shape)
+print(tiers_lab[0])
+print(tiers_sens[0])

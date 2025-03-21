@@ -9,6 +9,11 @@ configs_dir = work_dir / "configs"
 experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
+lab_mice = [
+    "2025-03-05_02_ESMT204_000",
+    "2025-02-26_02_ESPM126_001"    # Test stimuli
+]
+lab_num_neurons = [9, 2370]
 new_mice = [
     "dynamic29515",
     "dynamic29623",
@@ -35,8 +40,8 @@ dataset2url_format = {
     "old": "https://gin.g-node.org/pollytur/Sensorium2023Data/raw/master/{file_name}",
 }
 
-mice = new_mice + old_mice
-num_neurons = new_num_neurons + old_num_neurons
+mice = lab_mice + new_mice + old_mice
+num_neurons = lab_num_neurons + new_num_neurons + old_num_neurons
 
 num_mice = len(mice)
 index2mouse: dict[int, str] = {index: mouse for index, mouse in enumerate(mice)}

@@ -19,6 +19,7 @@ def create_videos_phashes(mouse: str) -> np.ndarray:
 
 def get_folds_tiers(mouse: str, num_folds: int):
     tiers = np.load(str(constants.sensorium_dir / mouse / "meta" / "trials" / "tiers.npy"))
+    tiers = tiers.astype(object)  # Convert to object dtype to allow longer strings.
     phashes = create_videos_phashes(mouse)
     if mouse in constants.new_mice:
         trial_ids = np.argwhere((tiers == "train") | (tiers == "oracle")).ravel()

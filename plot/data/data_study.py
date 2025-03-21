@@ -8,14 +8,14 @@ working_dir = os.path.join(os.curdir[:-9])
 sys.path.append(working_dir)
 
 sens_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/dynamic29515'
-lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-02-26_02_ESPM126_000'
+lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-05_02_ESMT204_000'
 
 trial = '26.npy'
 
 sens_video = np.load(os.path.join(sens_data_dir, 'data', 'videos', trial))
 lab_video = np.load(os.path.join(lab_data_dir, 'data', 'videos', trial))
 sens_response = np.load(os.path.join(sens_data_dir, 'data', 'responses', trial))
-lab_response = np.load(os.path.join(lab_data_dir, 'data', 'responses', trial))[:, ::9]
+lab_response = np.load(os.path.join(lab_data_dir, 'data', 'responses', trial))
 sens_behavior = np.load(os.path.join(sens_data_dir, 'data', 'behavior', trial))
 lab_behavior = np.load(os.path.join(lab_data_dir, 'data', 'behavior', trial))
 sens_pupil_center = np.load(os.path.join(sens_data_dir, 'data', 'pupil_center', trial))

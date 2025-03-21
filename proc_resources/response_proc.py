@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 import os
+import pandas as pd
 
 from scipy.signal import find_peaks
 
@@ -40,11 +41,26 @@ class Responses:
         self.F = F
         self.dF_F = dF_F
         self.rec_time = time
-        self.time = self.rec_time + (self.rec_period/2)
-        self.params = self.params
+        self.time_global = self.rec_time + (self.rec_period/2)
 
         self.data = self.spikes
+        self.params = self.params
         self.num_neurons = len(self.data[:, 0])
+
+    def process_global(self, video_freq):
+        self.compute_neuron_planes()
+
+        self.compute_plane_times()
+
+        if self.params['downscale']:
+            self.downscale()
+        
+        elif self.params['upscale']:
+            self.upscale()
+
+        if self.params['keep_only_spikes']: 
+            self.keep_only_spikes(video_freq)
+
 
 
     def process(self, video_frame_time):
@@ -52,35 +68,88 @@ class Responses:
         Takes the trial data and time from the whole recording by
         using the video frame times of the trial.
         """
-        if self.params['keep_only_spikes']: 
-            pre_time = self.keep_only_spikes(video_frame_time)
-        else:
-            pre_time, self.trial_data = self.time, self.data
 
-        resampled_response = []
-        for i in range(self.num_neurons):
-            resampled_response.append(np.interp(video_frame_time, pre_time, self.trial_data[i, :]))
-        self.trial_data = np.array(resampled_response)
+        if self.params['resample']:
+            self.resample(video_frame_time, self.time)
 
         if self.params['responses_renorm']:
             self.renorm()
 
 
-    def keep_only_spikes(self, video_frame_time):
-        temp_time = video_frame_time[::4]
+    def keep_only_spikes(self, video_freq):
+        temp_time = np.arange(0, self.time_global[-1], 1/video_freq)
 
         resampled_response = []
         for i in range(len(self.data)):
-            resampled_response.append(np.interp(temp_time, self.time, self.data[i, :]))
+            resampled_response.append(np.interp(temp_time, self.time[self.neuron_plane[i]], self.data[i, :]))
+        temp_data = np.array(resampled_response)
+
+        temp_data2 = np.zeros(temp_data.shape)
+        for i in range(len(self.data)):
+            peak_indices = find_peaks(temp_data[i, :])[0]
+            temp_data2[i, peak_indices] = temp_data[i, peak_indices]
+
+        self.data, self.time = temp_data2, temp_time
+
+
+    def resample(self, video_frame_time, time):
+        resampled_response = []
+        print(time[self.neuron_plane[0]].shape, self.data[0, :].shape)
+        for i in range(self.num_neurons):
+            resampled_response.append(np.interp(video_frame_time, time[self.neuron_plane[i]], self.data[i, :]))
         self.trial_data = np.array(resampled_response)
 
-        self.trial_data = np.zeros(self.trial_data.shape)
+
+    def downscale(self):
+        downs_resp = np.zeros((self.data.shape[0], int(np.floor(self.data.shape[1]/self.n_planes))))
+        for i in range(len(downs_resp)):
+            neuron_data = self.data[i, self.neuron_plane[i]::9]
+            if len(downs_resp[i, :]) < len(self.data[i, self.neuron_plane[i]::9]):
+                downs_resp[i] = neuron_data[:-1]
+            else:
+                downs_resp[i] = neuron_data
+
+        self.data = downs_resp
+
+
+    def upscale(self):
+        upscale_ratio = 60 / self.rec_freq
+        dx = self.rec_period
         for i in range(len(self.data)):
-            peak_indices = find_peaks(self.trial_data[i, :])[0]
-            self.trial_data[i, peak_indices] = self.trial_data[i, peak_indices]
+            first_derivative = np.gradient(self.data[i, :], dx)
+            second_derivative = np.gradient(first_derivative, dx)
+            point_types = np.sign(second_derivative)
+            point_types[self.data[i] == 0] = 0
+            window_indexes = np.where(point_types == 1)[0]
+            for i in range(len(window_indexes)):
+                window_start = window_indexes[i]
+                window_end = window_indexes[i + 1]
+                window_data = self.data[window_start:window_end]
+                window_upscaled = np.array((len(window_data) * upscale_ratio))
 
-        return temp_time
 
+
+        pass
+
+
+    def compute_plane_times(self):
+        self.time = np.zeros((self.n_planes, int(np.floor(len(self.time_global)/9))))
+        for i in range(self.n_planes):
+            plane_time = self.time_global[i::9]
+            if len(self.time[i, :]) < len(self.time_global[i::9]):
+                self.time[i, :] = plane_time[:-1]
+            else:
+                self.time[i, :] = plane_time
+                
+
+    def compute_neuron_planes(self):
+        """
+        Array with the index of the first nonzero value of each neuron
+        """
+        mask = self.data != 0
+        neuron_plane = mask.argmax(axis=1)
+        neuron_plane[~mask.any(axis=1)] = -1
+        self.neuron_plane = neuron_plane % 9
 
     def renorm(self):
         spikes = []

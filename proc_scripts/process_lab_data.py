@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import shutil
 
 current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent
@@ -24,10 +25,10 @@ videos = video_proc.Video(videos_params)
 responses = response_proc.Responses(response_params)
 responses.load_data(data)
 
-behavior = behavior_proc.Behavior(behavior_params, responses.time[-1])
+behavior = behavior_proc.Behavior(behavior_params, responses.time_global[-1])
 behavior.load_data(data)
 
-pupil_pos = pupil_pos_proc.PupilPosition(pupil_pos_params, responses.time[-1])
+pupil_pos = pupil_pos_proc.PupilPosition(pupil_pos_params, responses.time_global[-1])
 pupil_pos.load_data(data)
 
 j = 0
@@ -54,6 +55,8 @@ sanity_check(
 )
 
 print('Sanity check completed, see .../src/data/data_processing/sanity_checks/session_id for further info\n')
+
+responses.process_global(videos_params['freq'])
 
 for trial_id, trial_t0, i in zip(trials_df['F1_name'], trials_df['time'], np.arange(len(trials_df['time']))):
     print(str(i) + '/' + str(len(trials_df['F1_name'])))
@@ -108,3 +111,6 @@ print('Neuron coords file created.')
 unit_ids = np.arange(responses.num_neurons)
 np.save(os.path.join(mouse_dir, 'meta/neurons/unit_ids.npy'), unit_ids)
 print('Unit ids file created.')
+
+# Save config.py
+shutil.copy('configs/data_proc_001.py', mouse_dir)

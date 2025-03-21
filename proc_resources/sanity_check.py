@@ -12,21 +12,21 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
 
     # Time coherence
     t_i, t_f = np.array(trials_df['time'])[0], np.array(trials_df['time'])[-1]
-    if t_i - 8 > responses.time[0] and t_i - 8 > behavior.speed_time[0] and t_i - 8 > behavior.pupil_dilation_time[0] and t_i - 8 > pupil_pos.time[0]:
+    if t_i - 8 > responses.time_global[0] and t_i - 8 > behavior.speed_time[0] and t_i - 8 > behavior.pupil_dilation_time[0] and t_i - 8 > pupil_pos.time[0]:
         t_i_check = True 
     else: 
         t_i_check = False
-    if t_f + 8 < responses.time[-1] and t_f + 8 < behavior.speed_time[-1] and t_f + 8 < behavior.pupil_dilation_time[-1] and t_f + 8 < pupil_pos.time[-1]:
+    if t_f + 8 < responses.time_global[-1] and t_f + 8 < behavior.speed_time[-1] and t_f + 8 < behavior.pupil_dilation_time[-1] and t_f + 8 < pupil_pos.time[-1]:
         t_f_check = True
     else: t_f_check = False
     print('Recording start time and end time checks: ' + str(t_i_check) + ', ' + str(t_f_check))
-    response_synchro = (len(responses.data[0, :]) == len(responses.time))
+    response_synchro = (len(responses.data[0, :]) == len(responses.time_global))
     speed_synchro = (len(behavior.speed) == len(behavior.speed_time))
     pupil_dilation_synchro = (len(behavior.pupil_dilation) == len(behavior.pupil_dilation_time))
     pupil_pos_synchro = (len(pupil_pos.data[0, :]) == len(pupil_pos.time))
 
     print('Data synchonized: ' + str((response_synchro and speed_synchro and pupil_dilation_synchro and pupil_pos_synchro)))
-    if not response_synchro: print('Response data not synchronyzed. Number of time inputs = ' + str(len(responses.time)) + ', number of response inputs = ' + str(len(responses.data[0, :])))
+    if not response_synchro: print('Response data not synchronyzed. Number of time inputs = ' + str(len(responses.time_global)) + ', number of response inputs = ' + str(len(responses.data[0, :])))
     if not speed_synchro: print('Speed data not synchronyzed. Number of time inputs = ' + str(len(behavior.speed_time)) + ', number of speed inputs = ' + str(len(behavior.speed)))
     if not pupil_dilation_synchro: print('Pupil dilation data not synchronyzed. Number of time inputs = ' + str(len(behavior.pupil_dilation_time)) + ', number of pupil dilation inputs = ' + str(len(behavior.pupil_dilation)))
     if not pupil_pos_synchro: print('Pupil position data not synchronyzed. Number of time inputs = ' + str(len(pupil_pos.time)) + ', number of pupil position inputs = ' + str(len(pupil_pos.data[0, :])))
@@ -37,9 +37,9 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
     response_mean = np.mean(responses.data, axis=0)
     response_means, time_values = np.array([]), np.array([])
     for t_0 in trials_df['time'].iloc[0:]:
-        indexes = np.where((responses.time > t_0 - 8) & (responses.time < t_0 + 8))
+        indexes = np.where((responses.time_global > t_0 - 8) & (responses.time_global < t_0 + 8))
         response_means = np.concatenate((response_means, response_mean[indexes]))
-        time_values = np.concatenate((time_values, responses.time[indexes] - t_0))
+        time_values = np.concatenate((time_values, responses.time_global[indexes] - t_0))
     df = pd.DataFrame({
         'responses': response_means,
         'time': time_values
@@ -50,7 +50,7 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
     responses_tot = np.array(df['responses'])
     time_tot = np.array(df['time'])
     response_mean_amp = np.mean(responses_tot)
-    rec_rate = len(np.where((responses.time >= 10) & (responses.time < 11))[0])
+    rec_rate = len(np.where((responses.time_global >= 10) & (responses.time_global < 11))[0])
     plt.plot(time_tot, responses_tot, label='response_mean')
     plt.axhline(y=response_mean_amp, color='green', linestyle='--', label='mean session response amp')
     plt.axvline(x=0, color='red', linestyle='--', label='trial_start')
@@ -67,7 +67,7 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
     for trial in trials:
         trial_id = trials_df['F1_name'].iloc[trial]
         trial_t0 = trials_df['time'].iloc[trial]
-        indexes = np.where((responses.time >= trial_t0) & (responses.time < trial_t0 + 30))
+        indexes = np.where((responses.time_global >= trial_t0) & (responses.time_global < trial_t0 + 30))
         trial_response = responses.data[:, indexes]
         videos.load_video(trial_id, trial_t0)
         for neuron in neurons:
