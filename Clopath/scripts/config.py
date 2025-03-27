@@ -16,16 +16,16 @@ number_models = model_list.shape[0]
 
 # Data Loading Parameters
 
-animals = range(4, 5) # solo incluye el índice 4
+animals = range(0, 1) # solo incluye el índice 0
 fold_file_path = Path('folds_trials.json')
-fold_number = 0  # Definir el número de fold
+fold_number = 3  # Definir el número de fold
 fold_of_interest = str(fold_number)
 data_fold = f'fold_{fold_number}'
-start_trial = 8  # Se refiere al índice del trial en el fold seleccionado
-end_trial = 9  # No incluye este
+start_trial = 7  # Se refiere al índice del trial en el fold seleccionado
+end_trial = 8  # No incluye este
 random_trials = False  # Si es True, se eligen trials aleatorios; por defecto es False
 video_length = None  # Máximo es 300, pero puede ser demasiado para algunas GPUs
-check_data_fold = True
+check_data_fold = False
 if check_data_fold: 
     if fold_number not in model_list: raise ValueError("This sensorium model was trained using this fold.")
 
@@ -60,7 +60,7 @@ mask_eval_th = 1
 reconstruct_params = dict(
     subbatch_size = 32,
     minibatch = 8,
-    epoch_number_first = 1000,
+    epoch_number_first = 300,
     n_steps = 1,
     epoch_reducer = 1,
     vid_init = 'gray',
@@ -102,7 +102,8 @@ model_path[2] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/
 model_path[3] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_3/model-000-0.290196.pth').expanduser()
 model_path[4] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_4/model-000-0.289216.pth').expanduser()
 model_path[5] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_5/model-000-0.288470.pth').expanduser()
-model_path[6] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_6/model-000-0.289128.pth').expanduser()
+#model_path[6] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_6/model-000-0.289128.pth').expanduser()
+model_path[6] = Path('/home/albertestop/Sensorium/data/experiments/train_test_art/fold_3/model-017-0.000000.pth').expanduser()
 
 model_name = [None] * 7
 for i in range(len(model_path)):
