@@ -10,13 +10,13 @@ experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
 new_mice = [
-    "2025-02-26_02_ESPM126_000",    # "dynamic29515", "2025-03-05_02_ESMT204_000"
+    "2025-02-26_02_ESPM126_000",
     "dynamic29623",
     "dynamic29647",
     "dynamic29712",
     "dynamic29755",
 ]
-new_num_neurons = [2370, 7908, 8202, 7939, 8122]   # 7863, 9
+new_num_neurons = [2370, 7908, 8202, 7939, 8122]
 old_mice = [
     "dynamic29156",
     "dynamic29228",
@@ -25,6 +25,13 @@ old_mice = [
     "dynamic29514",
 ]
 old_num_neurons = [7440, 7928, 8285, 7671, 7495]
+"""
+Mice:
+2025-02-26_02_ESPM126_000, 2370
+2025-03-05_02_ESMT204_000, 9
+dynamic29515, 7863
+"""
+
 dataset2mice = {
     "new": new_mice,
     "old": old_mice,

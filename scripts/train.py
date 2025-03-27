@@ -194,8 +194,6 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     )
     print("DataLoaders creados.")
     #print_detailed_gpu_memory()
-
-    save_fold_tiers(mouse=mouse)
     
     for num_epochs, stage in zip(config["num_epochs"], config["stages"]):
         print(f"\nIniciando stage: {stage} por {num_epochs} épocas")

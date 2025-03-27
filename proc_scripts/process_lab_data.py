@@ -10,6 +10,7 @@ parent_dir = current_dir.parent
 sys.path.append(str(parent_dir))
 
 from src import constants
+from src.data import save_fold_tiers
 from configs.data_proc_001 import *
 from proc_resources import response_proc, video_proc, behavior_proc, pupil_pos_proc
 from proc_resources.sanity_check import sanity_check
@@ -129,3 +130,6 @@ print('Tiers file created.')
 
 # Save config.py
 shutil.copy('configs/data_proc_001.py', mouse_dir)
+
+# Save session tiers
+save_fold_tiers(session + '_' + data['mouse_run'])

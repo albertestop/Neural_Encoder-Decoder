@@ -6,7 +6,7 @@ from pathlib import Path
 
 randomize_models = False  # Si es True, se generan modelos aleatorios; si es False, se usan los modelos proporcionados
 num_random_models = 2  # Número de modelos aleatorios a generar si randomize_models es True
-user_model_list = np.array([0])  # Lista de modelos proporcionada por el usuario
+user_model_list = np.array([1])  # Lista de modelos proporcionada por el usuario
 if randomize_models:
     model_list = np.random.choice(range(7), num_random_models, replace=False)
 else:
@@ -18,11 +18,11 @@ number_models = model_list.shape[0]
 
 animals = range(0, 1) # solo incluye el índice 0
 fold_file_path = Path('folds_trials.json')
-fold_number = 3  # Definir el número de fold
+fold_number = 0  # Definir el número de fold
 fold_of_interest = str(fold_number)
 data_fold = f'fold_{fold_number}'
-start_trial = 7  # Se refiere al índice del trial en el fold seleccionado
-end_trial = 8  # No incluye este
+start_trial = 3  # Se refiere al índice del trial en el fold seleccionado
+end_trial = 4  # No incluye este
 random_trials = False  # Si es True, se eligen trials aleatorios; por defecto es False
 video_length = None  # Máximo es 300, pero puede ser demasiado para algunas GPUs
 check_data_fold = False
@@ -96,8 +96,10 @@ save_folder = '/reconstructions/results'
 model_path = [None] * 7
 model = [None] * number_models
 
-model_path[0] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_0/model-000-0.290928.pth').expanduser()
-model_path[1] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_1/model-000-0.292576.pth').expanduser()
+model_path[0] = Path('/home/albertestop/Sensorium/data/experiments/train_test_art/fold_1/model-003-0.444749.pth').expanduser()
+#model_path[0] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_0/model-000-0.290928.pth').expanduser()
+model_path[1] = Path('/home/albertestop/Sensorium/data/experiments/train_test_003/fold_0/model-006-0.135810.pth').expanduser()
+#model_path[1] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_1/model-000-0.292576.pth').expanduser()
 model_path[2] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_2/model-000-0.291243.pth').expanduser()
 model_path[3] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_3/model-000-0.290196.pth').expanduser()
 model_path[4] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_4/model-000-0.289216.pth').expanduser()
