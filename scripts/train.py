@@ -44,7 +44,7 @@ from src.inputs import get_inputs_processor
 from src.metrics import CorrelationMetric
 from src.indexes import IndexesGenerator
 from src.argus_models import MouseModel
-from src.data import get_mouse_data
+from src.data import get_mouse_data, save_fold_tiers
 from src.mixers import CutMix
 from src import constants
 
@@ -96,24 +96,24 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     mouse_indices = train_config.mouse_indices
     mice_to_use = [constants.mice[i] for i in mouse_indices]
     num_neurons_to_use = [constants.num_neurons[i] for i in mouse_indices]  # Mantener como lista
-    num_mice_used = len(mouse_indices)
+    num_mice_used = len(mice_to_use)
 
     # Actualizar readout_outputs en argus_params
     argus_params['nn_module'][1]['readout_outputs'] = num_neurons_to_use  # Usar la lista
 
     print("Creando modelo...")
     model = MouseModel(argus_params)
-    print_detailed_gpu_memory()
+    #print_detailed_gpu_memory()
 
     print("Aplicando DataParallel...")
     print(f"Using {torch.cuda.device_count()} GPUs!")
     model = nn.DataParallel(model)
-    print_detailed_gpu_memory()
+    #print_detailed_gpu_memory()
 
     if config.get("init_weights", False):
         print("Iniciando inicialización de pesos...")
         init_weights(model.module.nn_module)
-        print_detailed_gpu_memory()
+        #print_detailed_gpu_memory()
 
     if config.get("ema_decay", False):
         print(f"Configurando EMA decay: {config['ema_decay']}")
@@ -145,7 +145,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
 
     print("Creando datasets de entrenamiento...")
     train_datasets = []
-    mouse_epoch_size = config["train_epoch_size"] // len(train_config.mouse_indices)
+    mouse_epoch_size = config["train_epoch_size"] // num_mice_used
     for mouse in mice_to_use:
         train_datasets.append(
             TrainMouseVideoDataset(
@@ -161,7 +161,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     # Pasar mice_indexes al crear el dataset concatenado
     train_dataset = ConcatMiceVideoDataset(train_datasets)
     print(f"Tamaño del dataset de entrenamiento: {len(train_dataset)}")
-    print_detailed_gpu_memory()
+    #print_detailed_gpu_memory()
 
     print("Creando datasets de validación...")
     val_datasets = []
@@ -177,7 +177,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         )
     val_dataset = ConcatMiceVideoDataset(val_datasets)
     print(f"Tamaño del dataset de validación: {len(val_dataset)}")
-    print_detailed_gpu_memory()
+    #print_detailed_gpu_memory()
 
     print("Creando DataLoaders...")
     train_loader = DataLoader(
@@ -193,8 +193,10 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         shuffle=False,
     )
     print("DataLoaders creados.")
-    print_detailed_gpu_memory()
+    #print_detailed_gpu_memory()
 
+    save_fold_tiers(mouse=mouse)
+    
     for num_epochs, stage in zip(config["num_epochs"], config["stages"]):
         print(f"\nIniciando stage: {stage} por {num_epochs} épocas")
         callbacks = [

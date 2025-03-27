@@ -7,19 +7,30 @@ import sys
 working_dir = os.path.join(os.curdir[:-9])
 sys.path.append(working_dir)
 
-sens_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/dynamic29515'
-lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-05_02_ESMT204_000'
+sens_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/dynamic29514'
+lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-05_02_ESMT204_001'
 
-trial = '26.npy'
+trial_lab = '18.npy'
+trial_sens = '700.npy'
 
-sens_video = np.load(os.path.join(sens_data_dir, 'data', 'videos', trial))
-lab_video = np.load(os.path.join(lab_data_dir, 'data', 'videos', trial))
-sens_response = np.load(os.path.join(sens_data_dir, 'data', 'responses', trial))
-lab_response = np.load(os.path.join(lab_data_dir, 'data', 'responses', trial))
-sens_behavior = np.load(os.path.join(sens_data_dir, 'data', 'behavior', trial))
-lab_behavior = np.load(os.path.join(lab_data_dir, 'data', 'behavior', trial))
-sens_pupil_center = np.load(os.path.join(sens_data_dir, 'data', 'pupil_center', trial))
-lab_pupil_center = np.load(os.path.join(lab_data_dir, 'data', 'pupil_center', trial))
+sens_video = np.load(os.path.join(sens_data_dir, 'data', 'videos', trial_sens))
+lab_video = np.load(os.path.join(lab_data_dir, 'data', 'videos', trial_lab))
+sens_response = np.load(os.path.join(sens_data_dir, 'data', 'responses', trial_sens))
+lab_response = np.load(os.path.join(lab_data_dir, 'data', 'responses', trial_lab))
+sens_behavior = np.load(os.path.join(sens_data_dir, 'data', 'behavior', trial_sens))
+lab_behavior = np.load(os.path.join(lab_data_dir, 'data', 'behavior', trial_lab))
+sens_pupil_center = np.load(os.path.join(sens_data_dir, 'data', 'pupil_center', trial_sens))
+lab_pupil_center = np.load(os.path.join(lab_data_dir, 'data', 'pupil_center', trial_lab))
+
+# print(type(sens_video[0, 0, 0]), type(lab_video.astype(np.float32)[0, 0, 0]))
+# print(sens_video.shape, np.sum(np.isnan(sens_video)))
+# #sens_video[np.isnan(sens_video)] = 0
+# for i in range(sens_video.shape[2]):
+#     if np.sum(np.isnan(sens_video[:, :, i])) > 1: 
+#         plt.imshow(sens_video[:, :, i], cmap='gray')
+#         plt.savefig('delete.png')
+#         input('Press intro to continue')
+#         print(np.sum(np.isnan(sens_video[:, :, i])))
 
 check_data = []
 
@@ -41,8 +52,8 @@ plt.savefig('plot/data/data_study/First_frame_lab.png')
 if sens_response.shape == lab_response.shape: check_data.append('Response shapes are equal with shape = ' + str(sens_response.shape))
 else: check_data.append('Response shapes are: sens_response_shape = ' + str(sens_response.shape) + ', lab_response_shape = ' + str(lab_response.shape))
 plt.figure(4)
-plt.plot(np.arange(sens_response.shape[1]), sens_response[38, :], label='Sens neuron response')
-plt.plot(np.arange(lab_response.shape[1]), lab_response[112, :], label='Lab neuron response')
+plt.plot(np.arange(sens_response.shape[1]), sens_response[0, :], label='Sens neuron response')
+plt.plot(np.arange(lab_response.shape[1]), lab_response[0, :], label='Lab neuron response')
 plt.xlabel('Frame')
 plt.ylabel('Amplitude')
 plt.title('Sensorium vs lab neuron response')
@@ -50,8 +61,8 @@ plt.legend()
 plt.savefig('plot/data/data_study/Response_single_SensvsLab_ex1.png')
 
 plt.figure(8)
-plt.plot(np.arange(sens_response.shape[1]), sens_response[1000, :], label='Sens neuron response')
-plt.plot(np.arange(lab_response.shape[1]), lab_response[1000, :], label='Lab neuron response')
+plt.plot(np.arange(sens_response.shape[1]), sens_response[8, :], label='Sens neuron response')
+plt.plot(np.arange(lab_response.shape[1]), lab_response[8, :], label='Lab neuron response')
 plt.xlabel('Frame')
 plt.ylabel('Amplitude')
 plt.title('Sensorium vs lab neuron response')
@@ -103,4 +114,11 @@ plt.savefig('plot/data/data_study/PupilPos_SensvsLab.png')
 with open('plot/data/data_study/data_study.txt' , "w") as file:
     for item in check_data:
         file.write(f"{item}\n")
+    file.write('\nLab video min: ' + str(np.min(lab_video)) + ', lab video max: ' + str(np.max(lab_video)))
+    file.write('\nSens video min: ' + str(np.min(sens_video)) + ', sens video max: ' + str(np.max(sens_video)))
+    file.write('\nSens video type: ' + str(type(sens_video[0, 0, 0]))+ ', lab video type: ' + str(type(lab_video[0, 0, 0])))
+    file.write('\nSens responses type: ' + str(type(sens_response[0, 0])) + ', lab responses type: ' + str(type(lab_response[0, 0])))
+    file.write('\nSens behavior type: ' + str(type(sens_behavior[0, 0])) + ', ' + str(type(sens_behavior[1, 0])) + ', lab behavior type: ' + ', ' + str(type(lab_behavior[0, 0])) + ', ' + str(type(lab_behavior[1, 0])))
+    file.write('\nSens pupil pos type: ' + str(type(sens_pupil_center[0, 0])) + ', lab pupil pos type: ' + str(type(lab_pupil_center[0, 0])))
+
 file.close()

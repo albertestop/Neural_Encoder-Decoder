@@ -1,4 +1,11 @@
-Video shapes are different: sens_video_shape = (36, 64, 324), lab_video_shape = (36, 64, 300)
-Response shapes are: sens_response_shape = (7863, 324), lab_response_shape = (2370, 300)
-Behavior shapes are different: sens_behavior_shape = (2, 324), lab_behavior_shape = (2, 300)
-Pupil center shapes are different: lab_pupil_center_shape = (2, 300), sens_pupil_center_shape = (2, 324)
+Video shapes are different: sens_video_shape = (36, 64, 315), lab_video_shape = (36, 64, 300)
+Response shapes are: sens_response_shape = (7495, 315), lab_response_shape = (9, 300)
+Behavior shapes are different: sens_behavior_shape = (2, 315), lab_behavior_shape = (2, 300)
+Pupil center shapes are different: lab_pupil_center_shape = (2, 300), sens_pupil_center_shape = (2, 315)
+
+Lab video min: 20.0, lab video max: 235.0
+Sens video min: 0.546875, sens video max: 254.48438
+Sens video type: <class 'numpy.float32'>, lab video type: <class 'numpy.float32'>
+Sens responses type: <class 'numpy.float32'>, lab responses type: <class 'numpy.float32'>
+Sens behavior type: <class 'numpy.float32'>, <class 'numpy.float32'>, lab behavior type: , <class 'numpy.float32'>, <class 'numpy.float32'>
+Sens pupil pos type: <class 'numpy.float32'>, lab pupil pos type: <class 'numpy.float32'>

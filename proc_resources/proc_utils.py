@@ -45,7 +45,7 @@ def trial_names(trials_df):
     """
 
     if trials_df['F1_name'].iloc[1][-1].isdigit():
-        trials_df['F1_name'] = trials_df['F1_name'].str[-5:]
+        trials_df['F1_name'] = trials_df['F1_name'].str[-5:] + '/'
     else: 
         trials_df['F1_name'] = ''
     

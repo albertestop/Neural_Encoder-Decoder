@@ -36,7 +36,10 @@ class Behavior:
                 
             self.pupil_dilation_time = np.arange(0, self.session_length, 1/10)
 
-        
+        self.speed = self.speed.astype(np.float32)
+        self.speed_time = self.speed_time.astype(np.float32)
+        self.pupil_dilation = self.pupil_dilation.astype(np.float32)
+        self.pupil_dilation_time = self.pupil_dilation_time.astype(np.float32)
         self.params = self.params
 
 
@@ -56,3 +59,6 @@ class Behavior:
 
         if not self.params['has_pupil_dilation'] and self.params['gen_pupil_data'] == 'brightness_reactive':
             self.gen_pupil_dilation(trial_video)
+        
+        self.trial_data = self.trial_data.astype(np.float32)
+        

@@ -27,11 +27,11 @@ class Responses:
         n_planes = len(np.unique(np.array(file['Depths'])))
         rec_freq = 30/n_planes
         rec_period = 1/rec_freq
-        spikes = np.array(file['Spikes'])
-        dF = np.array(file['dF'])
-        F = np.array(file['F'])
+        spikes = np.array(file['Spikes']).astype(np.float32)
+        dF = np.array(file['dF']).astype(np.float32)
+        F = np.array(file['F']).astype(np.float32)
         dF_F = dF/F
-        time = np.array(file['t'])
+        time = np.array(file['t']).astype(np.float32)
 
         self.n_planes = n_planes
         self.rec_freq = rec_freq
@@ -47,57 +47,28 @@ class Responses:
         self.params = self.params
         self.num_neurons = len(self.data[:, 0])
 
-    def process_global(self, video_freq):
-        self.compute_neuron_planes()
 
-        self.compute_plane_times()
-
-        if self.params['downscale']:
-            self.downscale()
+    def compute_neuron_planes(self):
+        """
+        Array with the plane of each neuron.
         
-        elif self.params['upscale']:
-            self.upscale()
-
-        if self.params['keep_only_spikes']: 
-            self.keep_only_spikes(video_freq)
-
-
-
-    def process(self, video_frame_time):
+        It computes the index of the first different value of each neuron
+        and applies % n_planes
         """
-        Takes the trial data and time from the whole recording by
-        using the video frame times of the trial.
-        """
-
-        if self.params['resample']:
-            self.resample(video_frame_time, self.time)
-
-        if self.params['responses_renorm']:
-            self.renorm()
+        mask = self.data != self.data[:, 0][:, None]
+        first_diff_idx = np.argmax(mask, axis=1)
+        first_diff_idx[~mask.any(axis=1)] = -1
+        self.neuron_plane = first_diff_idx % self.n_planes
 
 
-    def keep_only_spikes(self, video_freq):
-        temp_time = np.arange(0, self.time_global[-1], 1/video_freq)
-
-        resampled_response = []
-        for i in range(len(self.data)):
-            resampled_response.append(np.interp(temp_time, self.time[self.neuron_plane[i]], self.data[i, :]))
-        temp_data = np.array(resampled_response)
-
-        temp_data2 = np.zeros(temp_data.shape)
-        for i in range(len(self.data)):
-            peak_indices = find_peaks(temp_data[i, :])[0]
-            temp_data2[i, peak_indices] = temp_data[i, peak_indices]
-
-        self.data, self.time = temp_data2, temp_time
-
-
-    def resample(self, video_frame_time, time):
-        resampled_response = []
-        print(time[self.neuron_plane[0]].shape, self.data[0, :].shape)
-        for i in range(self.num_neurons):
-            resampled_response.append(np.interp(video_frame_time, time[self.neuron_plane[i]], self.data[i, :]))
-        self.trial_data = np.array(resampled_response)
+    def compute_plane_times(self):
+        self.time = np.zeros((self.n_planes, int(np.floor(self.time_global.shape[0]/self.n_planes))))
+        for i in range(self.n_planes):
+            plane_time = self.time_global[i::9]
+            if len(self.time[i, :]) < len(self.time_global[i::9]):
+                self.time[i, :] = plane_time[:-1]
+            else:
+                self.time[i, :] = plane_time
 
 
     def downscale(self):
@@ -127,29 +98,46 @@ class Responses:
                 window_data = self.data[window_start:window_end]
                 window_upscaled = np.array((len(window_data) * upscale_ratio))
 
-
-
         pass
 
 
-    def compute_plane_times(self):
-        self.time = np.zeros((self.n_planes, int(np.floor(len(self.time_global)/9))))
-        for i in range(self.n_planes):
-            plane_time = self.time_global[i::9]
-            if len(self.time[i, :]) < len(self.time_global[i::9]):
-                self.time[i, :] = plane_time[:-1]
-            else:
-                self.time[i, :] = plane_time
-                
+    def keep_only_spikes(self, video_freq):
+        temp_time = np.arange(0, self.time_global[-1], 1/video_freq)
 
-    def compute_neuron_planes(self):
-        """
-        Array with the index of the first nonzero value of each neuron
-        """
-        mask = self.data != 0
-        neuron_plane = mask.argmax(axis=1)
-        neuron_plane[~mask.any(axis=1)] = -1
-        self.neuron_plane = neuron_plane % 9
+        resampled_response = []
+        for i in range(len(self.data)):
+            resampled_response.append(np.interp(temp_time, self.time[self.neuron_plane[i]], self.data[i, :])).astype(np.float32)
+        temp_data = np.array(resampled_response)
+
+        temp_data2 = np.zeros(temp_data.shape)
+        for i in range(len(self.data)):
+            peak_indices = find_peaks(temp_data[i, :])[0]
+            temp_data2[i, peak_indices] = temp_data[i, peak_indices]
+
+        self.data, self.time = temp_data2, temp_time
+
+
+    def process_global(self, video_freq):
+        self.compute_neuron_planes()
+
+        self.compute_plane_times()
+
+        if self.params['downscale']:
+            self.downscale()
+        
+        elif self.params['upscale']:
+            self.upscale()
+
+        if self.params['keep_only_spikes']: 
+            self.keep_only_spikes(video_freq)
+
+
+    def resample(self, video_frame_time, time):
+        resampled_response = []
+        for i in range(self.num_neurons):
+            resampled_response.append(np.interp(video_frame_time, time[self.neuron_plane[i]], self.data[i, :]))
+        self.trial_data = np.array(resampled_response)
+
 
     def renorm(self):
         spikes = []
@@ -167,3 +155,16 @@ class Responses:
 
             if self.params['renorm'] == 'sens_renorm':
                 self.trial_data = 16.97*self.trial_data/spike_mean
+
+
+    def process(self, video_frame_time):
+        """
+        Takes the trial data and time from the whole recording by
+        using the video frame times of the trial.
+        """
+        if self.params['resample']:
+            self.resample(video_frame_time, self.time)
+
+        if self.params['responses_renorm']:
+            self.renorm()
+        self.trial_data = self.trial_data.astype(np.float32)

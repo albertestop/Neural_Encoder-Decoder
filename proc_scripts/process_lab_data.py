@@ -35,13 +35,16 @@ j = 0
 mouse = data['session'] + '_' + data['mouse_run']
 mouse_dir = constants.sensorium_dir / mouse
 
-print('\nSaving data in ' + str(os.path.join(mouse_dir, 'data/videos')))
-if os.path.isdir(os.path.join(mouse_dir, 'data/videos')):
+print('\nSaving data in ' + str(mouse_dir))
+if os.path.isdir(os.path.join(mouse_dir, 'data')):
     print("The directory where the data is going to be saved already exists.")
     print("The execution will overwrite that directory and its contents.")
     carry_on = input("Continue with the execution? Y/N\n")
     if carry_on != 'Y':
         exit()
+
+shutil.copytree(constants.sensorium_dir / 'dynamic29515', mouse_dir, dirs_exist_ok=True)
+shutil.rmtree(mouse_dir / 'data')
 
 os.makedirs(os.path.join(mouse_dir, 'data/videos'), exist_ok=True)
 os.makedirs(os.path.join(mouse_dir, 'data/responses'), exist_ok=True)
@@ -58,12 +61,12 @@ print('Sanity check completed, see .../src/data/data_processing/sanity_checks/se
 
 responses.process_global(videos_params['freq'])
 
-for trial_id, trial_t0, i in zip(trials_df['F1_name'], trials_df['time'], np.arange(len(trials_df['time']))):
+for trial_id, trial_t0, duration, i in zip(trials_df['F1_name'], trials_df['time'], trials_df['duration'], np.arange(len(trials_df['time']))):
     print(str(i) + '/' + str(len(trials_df['F1_name'])))
     print('Processing trial ' + trial_id + ' of the experiment.')
     
     
-    videos.load_video(trial_id, trial_t0)
+    videos.load_video(trial_id, trial_t0, duration)
     while(videos.trial_video.shape[2] != len(videos.trial_frame_time)):
         videos.trial_frame_time = videos.trial_frame_time[:-1]
     
@@ -93,24 +96,36 @@ for trial_id, trial_t0, i in zip(trials_df['F1_name'], trials_df['time'], np.ara
 
 
 # Create tiers.py
-num_live_test = int(j * 0)
-num_train = j - num_live_test
-tiers = np.array(['train'] * num_train + ['live_test_main'] * num_live_test)
-np.random.shuffle(tiers)
-os.makedirs(os.path.join(mouse_dir, 'meta/trials/'), exist_ok=True)
-np.save(os.path.join(mouse_dir, 'meta/trials/tiers.npy'), tiers)
+# count_final_test_bonus = int(j * 0.19)
+# count_final_test_main = int(j * 0.08)
+# count_live_test_bonus = int(j * 0.08)
+# count_live_test_main = int(j * 0.08)
+# count_oracle = int(j * 0.08)
+# count_train = j - (count_final_test_bonus + count_final_test_main +
+#                    count_live_test_bonus + count_live_test_main +
+#                    count_oracle)
+# elements = (['final_test_bonus'] * count_final_test_bonus +
+#             ['final_test_main']  * count_final_test_main +
+#             ['live_test_bonus']  * count_live_test_bonus +
+#             ['live_test_main']   * count_live_test_main +
+#             ['oracle']           * count_oracle +
+#             ['train']            * count_train)
+# np.random.shuffle(elements)
+# tiers = np.array(elements)
+tiers = np.load(os.path.join(constants.sensorium_dir, 'dynamic29515', 'meta', 'trials', 'tiers.npy'))
+np.save(os.path.join(mouse_dir, 'meta/trials/tiers.npy'), tiers[:j])
 print('Tiers file created.')
 
 # Create cell_motor_coordinates.py
-cell_motor_coords = np.zeros((responses.num_neurons, 3))
-os.makedirs(os.path.join(mouse_dir, 'meta/neurons/'), exist_ok=True)
-np.save(os.path.join(mouse_dir, 'meta/neurons/cell_motor_coordinates.npy'), cell_motor_coords)
-print('Neuron coords file created.')
+# cell_motor_coords = np.zeros((responses.num_neurons, 3))
+# os.makedirs(os.path.join(mouse_dir, 'meta/neurons/'), exist_ok=True)
+# np.save(os.path.join(mouse_dir, 'meta/neurons/cell_motor_coordinates.npy'), cell_motor_coords)
+# print('Neuron coords file created.')
 
-# Create unit_ids.py
-unit_ids = np.arange(responses.num_neurons)
-np.save(os.path.join(mouse_dir, 'meta/neurons/unit_ids.npy'), unit_ids)
-print('Unit ids file created.')
+# # Create unit_ids.py
+# unit_ids = np.arange(1, responses.num_neurons + 1)
+# np.save(os.path.join(mouse_dir, 'meta/neurons/unit_ids.npy'), unit_ids)
+# print('Unit ids file created.')
 
 # Save config.py
 shutil.copy('configs/data_proc_001.py', mouse_dir)

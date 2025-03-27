@@ -32,15 +32,15 @@ class PupilPosition:
 
 
 
-        self.pupilX_mean = np.mean(pupil_pos[0])
-        self.pupilY_mean = np.mean(pupil_pos[1])
-        self.data = pupil_pos
-        self.time = pupil_time
+        self.pupilX_mean = np.mean(pupil_pos[0]).astype(np.float32)
+        self.pupilY_mean = np.mean(pupil_pos[1]).astype(np.float32)
+        self.data = pupil_pos.astype(np.float32)
+        self.time = pupil_time.astype(np.float32)
 
 
     def process(self, video_frame_time):
         resampled_pupil_pos = []
         for i in range(len(self.data[:, 0])):
             resampled_pupil_pos.append(np.interp(video_frame_time, self.time, self.data[i, :]))
-        self.trial_data = np.array(resampled_pupil_pos)
+        self.trial_data = np.array(resampled_pupil_pos).astype(np.float32)
         

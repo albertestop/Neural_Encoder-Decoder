@@ -9,19 +9,14 @@ configs_dir = work_dir / "configs"
 experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
-lab_mice = [
-    "2025-03-05_02_ESMT204_000",
-    "2025-02-26_02_ESPM126_001"    # Test stimuli
-]
-lab_num_neurons = [9, 2370]
 new_mice = [
-    "dynamic29515",
+    "2025-02-26_02_ESPM126_000",    # "dynamic29515", "2025-03-05_02_ESMT204_000"
     "dynamic29623",
     "dynamic29647",
     "dynamic29712",
     "dynamic29755",
 ]
-new_num_neurons = [7863, 7908, 8202, 7939, 8122]
+new_num_neurons = [2370, 7908, 8202, 7939, 8122]   # 7863, 9
 old_mice = [
     "dynamic29156",
     "dynamic29228",
@@ -35,13 +30,13 @@ dataset2mice = {
     "old": old_mice,
 }
 mouse2dataset = {m: d for d, mc in dataset2mice.items() for m in mc}
-dataset2url_format = {
-    "new": "https://gin.g-node.org/pollytur/sensorium_2023_dataset/raw/master/{file_name}",
-    "old": "https://gin.g-node.org/pollytur/Sensorium2023Data/raw/master/{file_name}",
-}
+# dataset2url_format = {
+#     "new": "https://gin.g-node.org/pollytur/sensorium_2023_dataset/raw/master/{file_name}",
+#     "old": "https://gin.g-node.org/pollytur/Sensorium2023Data/raw/master/{file_name}",
+# }
 
-mice = lab_mice + new_mice + old_mice
-num_neurons = lab_num_neurons + new_num_neurons + old_num_neurons
+mice = new_mice + old_mice
+num_neurons = new_num_neurons + old_num_neurons
 
 num_mice = len(mice)
 index2mouse: dict[int, str] = {index: mouse for index, mouse in enumerate(mice)}

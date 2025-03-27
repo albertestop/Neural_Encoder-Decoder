@@ -5,27 +5,27 @@ image_size = (64, 64)
 batch_size = 32
 base_lr = 3e-4
 frame_stack_size = 16
-animal = 'ESPM126'
-session = '2025-02-26_02_ESPM126'
-exp_directory = '/home/adamranson/data/Repository/'
+animal = 'ESPM113'
+session = '2024-10-17_01_ESPM113'
+exp_directory = '/home/pmateosaparicio/data/Repository/'
 
 data = dict(
     session = session,
     session_dir = os.path.join(exp_directory, animal, session),
-    mouse_run = '001',
+    mouse_run = '000',
     stim_eye = 'Left'   # Right or Left
 )
 
 videos_params = dict(
-    videos_dir = '/home/adamranson/data/vid_for_decoder/all_movie_clips_bv_sets/001/',
+    videos_dir = '/home/pmateosaparicio/data/Repository/bv_resources/001',  # Ficar sense '/' al final
     freq = 30
 )
 
 response_params = dict(
     has_data = True,
-    keep_only_spikes = False,
     downscale = True,
     upscale = False,    # Not compatible with downscale
+    keep_only_spikes = False,
     resample = True,
     responses_renorm = True,
     renorm = 'sens_renorm'   # sens_renorm/abs_mean/mean/

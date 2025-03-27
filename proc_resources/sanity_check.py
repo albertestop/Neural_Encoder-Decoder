@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from configs.data_proc_001 import data
+import json
 
 def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
 
@@ -67,9 +68,10 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
     for trial in trials:
         trial_id = trials_df['F1_name'].iloc[trial]
         trial_t0 = trials_df['time'].iloc[trial]
+        trial_duration = trials_df['duration'].iloc[trial]
         indexes = np.where((responses.time_global >= trial_t0) & (responses.time_global < trial_t0 + 30))
         trial_response = responses.data[:, indexes]
-        videos.load_video(trial_id, trial_t0)
+        videos.load_video(trial_id, trial_t0, trial_duration)
         for neuron in neurons:
             for j in range(len(videos.trial_video[:, 0, 0])):
                 for k in range(len(videos.trial_video[0, :, 0])):
@@ -148,3 +150,23 @@ def sanity_check(parent_dir, trials_df, responses, behavior, pupil_pos, videos):
     plt.legend()
     plt.savefig(os.path.join(parent_dir, 'data', 'data_processing', 'sanity_checks', data['session'] + '/time_coherence_pupil_pos.png'))
     plt.cla()
+
+    # Check we have the same number of neurons of each plane
+    mask = responses.data != responses.data[:, 0][:, None]
+    first_diff_idx = np.argmax(mask, axis=1)
+    first_diff_idx[~mask.any(axis=1)] = -1
+    neuron_plane = first_diff_idx % responses.n_planes
+    unique_values, counts = np.unique(neuron_plane, return_counts=True)
+    unique_values= [str(x) for x in unique_values]
+    min_n, max_n = min(counts), max(counts)
+    if np.abs(max_n - min_n) > 1:
+        print('Planes are not distributed evenly')
+        print('Plane, num_cells:')
+        print(unique_values, counts)
+    else:
+        print('Planes detected correctly')
+    unique_values = [str(x) for x in unique_values]
+    counts = [str(x) for x in counts]
+    result = dict(zip(unique_values, counts))
+    with open(os.path.join(parent_dir, 'data', 'data_processing', 'sanity_checks', data['session'] + '/s_check.txt'), 'w') as file:
+        json.dump(result, file, indent=4)
