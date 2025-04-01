@@ -262,6 +262,7 @@ if __name__ == "__main__":
 
     # Guardar la configuración en un archivo JSON
     shutil.copy('configs/train_config.py', experiment_dir)
+    shutil.copy('src/constants.py', experiment_dir)
     print("Archivo config copiado en el directorio del experimento.")
 
     for fold_split in folds_splits:

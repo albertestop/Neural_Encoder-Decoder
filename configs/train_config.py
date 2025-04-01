@@ -4,7 +4,7 @@ import torch
 from pathlib import Path
 
 mouse_indices = [0]
-folds = '0'   # '0,1,2' // 'all'
+folds = '1'   # '0,1,2' // 'all'
 experiment = Path('new_experiment')
 iter_par = 2
 image_size = (64, 64)
@@ -39,7 +39,7 @@ config = dict(
     min_base_lr=base_lr * 0.01,
     ema_decay=0.999,
     train_epoch_size=72000,
-    num_epochs=[3, 18],
+    num_epochs=[3, 12],
     stages=["warmup", "train"],
     num_dataloader_workers=4 * num_gpus,  # Ajustamos el número de workers basado en las GPUs
     init_weights=True,
