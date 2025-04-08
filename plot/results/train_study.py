@@ -8,7 +8,7 @@ import sys
 working_dir = os.path.join(os.curdir[:-9])
 sys.path.append(working_dir)
 
-experiment_dir = 'train_test_004'
+experiment_dir = 'train_test_art'
 
 model_dir = os.path.join('data', 'experiments', experiment_dir)
 plot_dir = os.path.join('plot', 'results', 'train', experiment_dir)

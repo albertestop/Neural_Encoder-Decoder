@@ -8,7 +8,7 @@ working_dir = os.path.join(os.curdir[:-9])
 sys.path.append(working_dir)
 
 sens_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/dynamic29514'
-lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-05_02_ESMT204_000'
+lab_data_dir = '/home/albertestop/data/processed_data/sensorium_all_2023/2025-03-13_02_ESPM126_000'
 
 trial_lab = '18.npy'
 trial_sens = '700.npy'

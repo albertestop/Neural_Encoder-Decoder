@@ -3,11 +3,15 @@ import pickle
 import pandas as pd
 import os
 
+from proc_resources.proc_utils import raw_pupil_file
+
+
 class Behavior:
 
     def __init__(self, behavior_params, length):
         self.params = behavior_params
         self.session_length = length
+        self.mask_threshold = 0.1
 
     def load_data(self, data):
         
@@ -42,6 +46,34 @@ class Behavior:
         self.pupil_dilation_time = self.pupil_dilation_time.astype(np.float32)
         self.params = self.params
 
+        self.acceptable_mask = []
+        for eye in data['eyes']:
+            likelihood_pupil, quality_control = self.load_pupil_raw_likelihood(data, eye)
+            acceptable_mask_par = self.mask_creator(likelihood_pupil, quality_control)
+            self.acceptable_mask.append(acceptable_mask_par)
+
+
+    def load_pupil_raw_likelihood(self, data, eye):
+        raw_pupil_dir = raw_pupil_file(data['session_dir'], data['session'], eye)
+        h5_file_path = os.path.join(data['session_dir'], raw_pupil_dir)
+        pupil_data_raw = pd.read_hdf(h5_file_path)
+        likelihood_cols = pupil_data_raw.filter(like='likelihood')
+        likelihood_pupil = likelihood_cols.filter(like='pupil')
+        
+
+        with open(os.path.join(data['session_dir'], 'recordings', 'dlcEye' + data['stim_eye'] + '.pickle'), 'rb') as file:
+                file = pickle.load(file)
+
+        quality_control = file['qc']
+        return likelihood_pupil, quality_control
+
+
+    def mask_creator(self, likelihoods, qc):
+        avg_likelihood = np.mean(likelihoods, axis=1)
+        mask = 1 - avg_likelihood + qc
+        acceptable_mask = mask < self.mask_threshold
+        return acceptable_mask
+
 
     def gen_pupil_dilation(self, trial_video):
         
@@ -51,7 +83,16 @@ class Behavior:
         self.trial_data[0] = pupil_diameter
 
 
+    def remake_bad_data(self):
+        excluded = np.where(~self.acceptable_mask, self.pupil_dilation, np.nan)
+        x = np.arange(len(self.pupil_dilation))
+        nans= np.isnan(excluded)
+        self.pupil_dilation = np.interp(x[nans], x[~nans], self.pupil_dilation[~nans])  
+
+
     def process(self, video_frame_time, trial_video):
+
+        self.remake_bad_data()
 
         resampled_speed = np.interp(video_frame_time, self.speed_time, self.speed)
         resampled_pupil_dilation = np.interp(video_frame_time, self.pupil_dilation_time, self.pupil_dilation)

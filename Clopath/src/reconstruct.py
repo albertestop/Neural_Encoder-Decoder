@@ -19,6 +19,7 @@ class Reconstructor:
         self.adam_beta2 = reconstruct_params['adam_beta2']
         self.pix_decay_rate = reconstruct_params['pix_decay_rate']
         self.input_noise = reconstruct_params['input_noise']
+        self.apply_mask = reconstruct_params['mask']
         self.epoch_switch = epoch_switch
         self.strides_all = strides_all
         self.device = device
@@ -81,7 +82,7 @@ class Reconstructor:
         loss = utils.response_loss_function(
             responses_predicted_new,
             self.gt_responses[:, subbatch_frames].clone().detach(),
-            mask=self.population_mask
+            mask = self.population_mask if self.apply_mask else None
         )
 
         # Compute gradients to apply to input_prediction to reduce loss
@@ -157,7 +158,7 @@ class Reconstructor:
                 
         gradients_fullvid = torch.nanmean(gradients_fullvid, axis=1, keepdim=True) #join gradients to have a sinle gradient tensor for a full video
         gradients_fullvid = torch.nanmean(gradients_fullvid, axis=0, keepdim=False)
-        gradients_fullvid = gradients_fullvid * self.mask_update_expanded #apply spatial mask to gradients//gradients to mask
+        if self.apply_mask: gradients_fullvid = gradients_fullvid * self.mask_update_expanded #apply spatial mask to gradients//gradients to mask
         if self.clip_grad is not None:
             gradients_fullvid = torch.clip(gradients_fullvid, -1 * self.clip_grad, self.clip_grad)
 
@@ -171,7 +172,7 @@ class Reconstructor:
         if self.pix_decay_rate > 0:
             video_pred = ((video_pred - 255 / 2) * (1 - self.pix_decay_rate)) + (255 / 2)
 
-        video_pred = video_pred.detach().requires_grad_(True) # we detach video_pred from the current computational graph so that new gradients are computed in the next iteration
+        #video_pred = video_pred.detach().requires_grad_(True) # we detach video_pred from the current computational graph so that new gradients are computed in the next iteration
 
         return video_pred, loss, gradients_fullvid
 

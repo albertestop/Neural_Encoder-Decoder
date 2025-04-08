@@ -106,7 +106,7 @@ class Responses:
 
         resampled_response = []
         for i in range(len(self.data)):
-            resampled_response.append(np.interp(temp_time, self.time[self.neuron_plane[i]], self.data[i, :])).astype(np.float32)
+            resampled_response.append(np.interp(temp_time, self.time[self.neuron_plane[i]], self.data[i, :]).astype(np.float32))
         temp_data = np.array(resampled_response)
 
         temp_data2 = np.zeros(temp_data.shape)

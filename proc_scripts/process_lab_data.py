@@ -7,19 +7,24 @@ import shutil
 
 current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent
+home_dir = os.path.expanduser("~")
+sc_dir = os.path.join(home_dir, 'data')
 sys.path.append(str(parent_dir))
 
 from src import constants
 from src.data import save_fold_tiers
 from configs.data_proc_001 import *
 from proc_resources import response_proc, video_proc, behavior_proc, pupil_pos_proc
-from proc_resources.sanity_check import sanity_check
+from sc_resources.sanity_check import sanity_check
 from proc_resources.proc_utils import *
 
+run_data = input('What is the peculiarity of this processing?\n')
 
 trials_df = pd.read_csv(os.path.join(data['session_dir'], data['session'] + '_all_trials.csv'))
 trials_df = trials_df[['time', 'duration', 'F1_name']]
 trials_df['F1_name'] = trial_names(trials_df)
+
+os.makedirs(os.path.join(sc_dir, 'pre_processing', data['session']), exist_ok=True)
 
 videos = video_proc.Video(videos_params)
 
@@ -32,7 +37,8 @@ behavior.load_data(data)
 pupil_pos = pupil_pos_proc.PupilPosition(pupil_pos_params, responses.time_global[-1])
 pupil_pos.load_data(data)
 
-j = 0
+print('\nData loaded.')
+
 mouse = data['session'] + '_' + data['mouse_run']
 mouse_dir = constants.sensorium_dir / mouse
 
@@ -52,15 +58,16 @@ os.makedirs(os.path.join(mouse_dir, 'data/responses'), exist_ok=True)
 os.makedirs(os.path.join(mouse_dir, 'data/behavior'), exist_ok=True)
 os.makedirs(os.path.join(mouse_dir, 'data/pupil_center'), exist_ok=True)
 
-print('\nData loaded.')
-
 sanity_check(
-    parent_dir, trials_df, responses, behavior, pupil_pos, videos
+    sc_dir, trials_df, responses, behavior, pupil_pos, videos
 )
 
-print('Sanity check completed, see .../src/data/data_processing/sanity_checks/session_id for further info\n')
+print('Sanity check completed, see .../data/pre_processing/' + data['session'] + '\n')
+
 
 responses.process_global(videos_params['freq'])
+
+j = 0
 
 for trial_id, trial_t0, duration, i in zip(trials_df['F1_name'], trials_df['time'], trials_df['duration'], np.arange(len(trials_df['time']))):
     print(str(i) + '/' + str(len(trials_df['F1_name'])))
@@ -97,39 +104,43 @@ for trial_id, trial_t0, duration, i in zip(trials_df['F1_name'], trials_df['time
 
 
 # Create tiers.py
-# count_final_test_bonus = int(j * 0.19)
-# count_final_test_main = int(j * 0.08)
-# count_live_test_bonus = int(j * 0.08)
-# count_live_test_main = int(j * 0.08)
-# count_oracle = int(j * 0.08)
-# count_train = j - (count_final_test_bonus + count_final_test_main +
-#                    count_live_test_bonus + count_live_test_main +
-#                    count_oracle)
-# elements = (['final_test_bonus'] * count_final_test_bonus +
-#             ['final_test_main']  * count_final_test_main +
-#             ['live_test_bonus']  * count_live_test_bonus +
-#             ['live_test_main']   * count_live_test_main +
-#             ['oracle']           * count_oracle +
-#             ['train']            * count_train)
-# np.random.shuffle(elements)
-# tiers = np.array(elements)
-tiers = np.load(os.path.join(constants.sensorium_dir, 'dynamic29515', 'meta', 'trials', 'tiers.npy'))
+count_final_test_bonus = int(j * 0.01)#0.19)
+count_final_test_main = int(j * 0.01)#0.08)
+count_live_test_bonus = int(j * 0.01)#0.08)
+count_live_test_main = int(j * 0.01)#0.08)
+count_oracle = int(j * 0.01)
+count_train = j - (count_final_test_bonus + count_final_test_main +
+                   count_live_test_bonus + count_live_test_main +
+                   count_oracle)
+elements = (['final_test_bonus'] * count_final_test_bonus +
+            ['final_test_main']  * count_final_test_main +
+            ['live_test_bonus']  * count_live_test_bonus +
+            ['live_test_main']   * count_live_test_main +
+            ['oracle']           * count_oracle +
+            ['train']            * count_train)
+np.random.shuffle(elements)
+tiers = np.array(elements)
+#tiers = np.load(os.path.join(constants.sensorium_dir, 'dynamic29515', 'meta', 'trials', 'tiers.npy'))
 np.save(os.path.join(mouse_dir, 'meta/trials/tiers.npy'), tiers[:j])
 print('Tiers file created.')
 
 # Create cell_motor_coordinates.py
-# cell_motor_coords = np.zeros((responses.num_neurons, 3))
-# os.makedirs(os.path.join(mouse_dir, 'meta/neurons/'), exist_ok=True)
-# np.save(os.path.join(mouse_dir, 'meta/neurons/cell_motor_coordinates.npy'), cell_motor_coords)
-# print('Neuron coords file created.')
+cell_motor_coords = np.zeros((responses.num_neurons, 3))
+os.makedirs(os.path.join(mouse_dir, 'meta/neurons/'), exist_ok=True)
+np.save(os.path.join(mouse_dir, 'meta/neurons/cell_motor_coordinates.npy'), cell_motor_coords)
+print('Neuron coords file created.')
 
-# # Create unit_ids.py
-# unit_ids = np.arange(1, responses.num_neurons + 1)
-# np.save(os.path.join(mouse_dir, 'meta/neurons/unit_ids.npy'), unit_ids)
-# print('Unit ids file created.')
+# Create unit_ids.py
+unit_ids = np.arange(1, responses.num_neurons + 1)
+np.save(os.path.join(mouse_dir, 'meta/neurons/unit_ids.npy'), unit_ids)
+print('Unit ids file created.')
 
 # Save config.py
 shutil.copy('configs/data_proc_001.py', mouse_dir)
 
 # Save session tiers
 save_fold_tiers(session + '_' + data['mouse_run'])
+
+# Save data description
+with open(os.path.join(mouse_dir, "run_data.txt"), "w") as file:
+    file.write(run_data)

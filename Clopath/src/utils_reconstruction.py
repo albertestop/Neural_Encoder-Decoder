@@ -128,7 +128,6 @@ def response_loss_function(responses_predicted,responses,loss_func='poisson',dro
             mask = torch.rand((responses_predicted.shape[0],1), device=device) > dropout_rate # above == keep, so dropout_rate=0.1 means 10% dropout
             mask = mask.repeat(1,responses_predicted.shape[1])
         
-        #if drop_method == 'zero_pred':
         if drop_method == 'zero_pred':
             responses_predicted = responses_predicted * mask
         elif drop_method == 'zero_pred_n_true':
@@ -142,18 +141,20 @@ def response_loss_function(responses_predicted,responses,loss_func='poisson',dro
         loss = torch.nn.MSELoss()
     elif loss_func == 'poisson':
         loss = torch.nn.PoissonNLLLoss(log_input=False, full=False)
-    return loss(responses_predicted.float(),responses.float())
+    elif loss_func == 'me':
+        loss = torch.nn.L1Loss()
+    return loss(responses_predicted.float(), responses.float())
 
 def init_weights(inputs, vid_init, device):
     """
     Returns video initialsation
     """
     if vid_init == 'noise':
-        video_pred = torch.randn((1,1,inputs.shape[1],inputs.shape[2],inputs.shape[3])).to(device)
+        video_pred = torch.randn((1,1,inputs.shape[1],inputs.shape[2],inputs.shape[3]), requires_grad=True).to(device)
         video_pred = min_max_rescale(video_pred, min=0, max=255)
         
     elif vid_init == 'static_noise':
-        video_pred = torch.randn((1,1,1,inputs.shape[2],inputs.shape[3])).to(device)
+        video_pred = torch.randn((1,1,1,inputs.shape[2],inputs.shape[3]), requires_grad=True).to(device)
         video_pred = video_pred.repeat(1,1,inputs.shape[1],1,1)
         video_pred = min_max_rescale(video_pred, min=0, max=255)
         

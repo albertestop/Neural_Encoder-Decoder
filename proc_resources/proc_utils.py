@@ -1,4 +1,19 @@
 import numpy as np
+import os
+
+
+def raw_pupil_file(session_dir, session, eye):
+    eye = eye.lower()
+    files = os.listdir(session_dir)
+    filtered_files = [f for f in files if f.startswith(session + '_eye1_' + eye)]
+    filtered_files = [f for f in filtered_files if f.endswith('h5')]
+    return filtered_files[0]
+    
+
+def trial_indexes(t_0, duration, rec_time):
+    indexes = np.where((rec_time > t_0) & (rec_time < t_0 + duration))[0]
+    return indexes
+
 
 def resample(data, original_freq, new_freq):
     original_freq = 20

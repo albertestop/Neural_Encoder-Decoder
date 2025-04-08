@@ -265,6 +265,10 @@ if __name__ == "__main__":
     shutil.copy('src/constants.py', experiment_dir)
     print("Archivo config copiado en el directorio del experimento.")
 
+    run_notes = input('Enter any relevant training notes:\n')
+    with open(os.path.join(experiment_dir, "run_data.txt"), "w") as file:
+        file.write(run_notes)
+
     for fold_split in folds_splits:
 
         fold_experiment_dir = experiment_dir / fold_split
