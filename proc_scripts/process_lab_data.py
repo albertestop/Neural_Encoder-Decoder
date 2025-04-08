@@ -138,9 +138,6 @@ print('Unit ids file created.')
 # Save config.py
 shutil.copy('configs/data_proc_001.py', mouse_dir)
 
-# Save session tiers
-save_fold_tiers(session + '_' + data['mouse_run'])
-
 # Save data description
 with open(os.path.join(mouse_dir, "run_data.txt"), "w") as file:
     file.write(run_data)
