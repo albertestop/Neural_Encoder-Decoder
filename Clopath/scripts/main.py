@@ -11,7 +11,7 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 
-from src.data import get_mouse_data
+from src.data import get_mouse_data, save_fold_tiers
 from src import constants
 import Clopath.src.utils_reconstruction as utils
 from Clopath.src.data_saving import *
@@ -42,6 +42,7 @@ for mouse_index in animals:
     mouse_save_path = execution_save_path + '/' + constants.mice[mouse_index]
     if not os.path.isdir(mouse_save_path): os.mkdir(mouse_save_path)
     mouse_key = constants.mice[mouse_index]
+    save_fold_tiers(mouse_key)
     mouse_data = get_mouse_data(mouse=mouse_key, splits=[data_fold])
     mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/mask_m{mouse_index}.npy'))
     mask_update = torch.tensor(np.where(mask >= mask_update_th, 1, 0)).to(device) # mask for gradients

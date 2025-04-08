@@ -144,3 +144,5 @@ save_fold_tiers(session + '_' + data['mouse_run'])
 # Save data description
 with open(os.path.join(mouse_dir, "run_data.txt"), "w") as file:
     file.write(run_data)
+
+# Run data study for processed data
