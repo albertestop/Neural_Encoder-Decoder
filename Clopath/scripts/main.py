@@ -36,7 +36,6 @@ model, predictor = load_models(
     device, model_path, model_list, number_models, model
 )
 
-
 for mouse_index in animals:
 
     mouse_save_path = execution_save_path + '/' + constants.mice[mouse_index]

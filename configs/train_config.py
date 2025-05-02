@@ -3,7 +3,7 @@ from src import constants
 import torch
 from pathlib import Path
 
-mouse_indices = [0, 1, 2, 3]
+mouse_indices = [0]
 folds = '0'   # '0,1,2' // 'all'
 experiment = Path('new_experiment')
 iter_par = 2
@@ -38,7 +38,7 @@ config = dict(
     base_lr=base_lr,
     min_base_lr=base_lr * 0.01,
     ema_decay=0.999,
-    train_epoch_size=16000,
+    train_epoch_size=8000,
     num_epochs=[3, 18],
     stages=["warmup", "train"],
     num_dataloader_workers=4 * num_gpus,  # Ajustamos el número de workers basado en las GPUs

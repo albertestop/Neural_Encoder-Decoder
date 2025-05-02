@@ -19,9 +19,9 @@ from torch import nn
 from src.argus_models import MouseModel
 from src.data import save_fold_tiers
 from configs.train_config import config, data_load
-from configs.data_proc_001 import data
-from proc_resources import response_proc, video_proc, behavior_proc, pupil_pos_proc
+import pathlib
+import importlib
 
-
-working_dir = os.path.join(os.curdir[:-9])
-sys.path.append(working_dir)
+model_params_path = 'data.experiments.train_test_010.train_config'
+config = importlib.import_module(model_params_path)
+print(config.folds)

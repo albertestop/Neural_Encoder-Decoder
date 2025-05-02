@@ -7,14 +7,9 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 import os
-import time
 import copy
-import json
 import argparse
 import gc
-from pprint import pprint
-from importlib.machinery import SourceFileLoader
-import numpy as np
 
 import torch
 import torch.nn as nn
@@ -47,6 +42,7 @@ from src.argus_models import MouseModel
 from src.data import get_mouse_data, save_fold_tiers
 from src.mixers import CutMix
 from src import constants
+from src.performance import check_response
 
 # Configurar PYTORCH_CUDA_ALLOC_CONF al inicio del script
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
@@ -235,6 +231,10 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
             metrics=metrics
         )
         print("Entrenamiento completado.")
+
+        check_response(argus_params["device"], save_dir)
+
+
 
 if __name__ == "__main__":
     # Añadir el directorio raíz del proyecto al PYTHONPATH (nuevamente por si acaso)
