@@ -72,7 +72,7 @@ config = dict(
             "lr": get_lr(base_lr, batch_size),
             "weight_decay": 0.05,
         }),
-        "device": "cuda:1",  # DDP manejará la asignación específica del dispositivo
+        "device": "cuda:0",  # DDP manejará la asignación específica del dispositivo
         "frame_stack": {
             "size": frame_stack_size,
             "step": 2,

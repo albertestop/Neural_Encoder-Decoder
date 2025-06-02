@@ -43,7 +43,7 @@ for mouse_index in animals:
     mouse_key = constants.mice[mouse_index]
     save_fold_tiers(mouse_key)
     mouse_data = get_mouse_data(mouse=mouse_key, splits=[data_fold])
-    mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/mask_m{mouse_index}.npy'))
+    mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
     mask_update = torch.tensor(np.where(mask >= mask_update_th, 1, 0)).to(device) # mask for gradients
     mask_eval = torch.tensor(np.where(mask >= mask_eval_th, 1, 0)).to(device) # mask for pixels
 

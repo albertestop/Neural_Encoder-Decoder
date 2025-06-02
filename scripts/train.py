@@ -49,11 +49,6 @@ os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 
 torch.backends.cudnn.benchmark = True
 
-def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--experiment", required=True, type=str)
-    parser.add_argument("-f", "--folds", default="all", type=str)
-    return parser.parse_args()
 
 def print_detailed_gpu_memory():
     print("\nUso detallado de memoria GPU:")
@@ -63,13 +58,7 @@ def print_detailed_gpu_memory():
         print(f"  Memoria asignada: {torch.cuda.memory_allocated(i) / 1e9:.2f} GB")
         print(f"  Memoria reservada: {torch.cuda.memory_reserved(i) / 1e9:.2f} GB")
         print(f"  Memoria máxima asignada: {torch.cuda.max_memory_allocated(i) / 1e9:.2f} GB")
-
-def aggressive_memory_cleanup():
-    gc.collect()
-    torch.cuda.empty_cache()
-    torch.cuda.synchronize()
-    print("Limpieza de memoria agresiva realizada.")
-    print_detailed_gpu_memory()
+        
 
 # Definir el callback personalizado para actualizar el EMA
 class EmaUpdateCallback(Callback):
@@ -232,7 +221,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         )
         print("Entrenamiento completado.")
 
-        check_response(argus_params["device"], save_dir)
+        if stage == 'train': check_response(argus_params["device"], save_dir)
 
 
 
@@ -260,7 +249,7 @@ if __name__ == "__main__":
         outfile.write(script_path.read_text())
     print("Archivo train.py actualizado en el directorio del experimento.")
 
-    # Guardar la configuración en un archivo JSON
+    # Guardar la configuración
     shutil.copy('configs/train_config.py', experiment_dir)
     shutil.copy('src/constants.py', experiment_dir)
     print("Archivo config copiado en el directorio del experimento.")
