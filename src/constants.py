@@ -10,13 +10,13 @@ experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
 new_mice = [
-    "dynamic29515_ART_FROM_VIDEO_corr",
+    "2025-04-01_01_ESPM127_002",
     # "2025-02-26_02_ESPM126_000",
     # "2025-04-01_01_ESPM127_000",
     # "dynamic29712",
     # "dynamic29755",
 ]
-new_num_neurons = [2304]#, 5155, 2991, 7939, 8122]
+new_num_neurons = [2991]#, 5155, 2991, 7939, 8122]
 old_mice = [
     # "dynamic29156",
     # "dynamic29228",
