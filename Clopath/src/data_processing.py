@@ -10,7 +10,6 @@ from Clopath.src_pipeline.video_utils import *
 
 class Pipeline:
     def __init__(self, trial_index, device):
-        self.trial_index = trial_index
         self.device = device
         self.pc_pipeline = PupilCenterPipeline()
         self.responses_pipeline = ResponsesPipeline(trial_index, device)

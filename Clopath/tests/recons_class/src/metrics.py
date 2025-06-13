@@ -40,13 +40,10 @@ def compression_gain(video, mask):
     return pre_weight/ post_weight
 
 
+
 if __name__ == '__main__':
     
-    dataset = np.zeros((720, 4))
-
-    
-
-    """print('\nMETRIC STUDY')
+    print('\nMETRIC STUDY')
 
     video_path = '/home/albertestop/data/processed_data/sensorium_all_2023/dynamic29515/data/videos/0.npy'
     video = np.load(video_path)
@@ -105,6 +102,6 @@ if __name__ == '__main__':
     print(f'Temporal correlation: {temporal_corr(video, mask)}')
     print(f'Temporal ssim: {temporal_ssim(video, mask)}')
     print(f'Spectral slope: {spectral_slope(video, mask)}')
-    print(f'Compression rate: {compression_gain(video, mask)}')"""
+    print(f'Compression rate: {compression_gain(video, mask)}')
 
 
