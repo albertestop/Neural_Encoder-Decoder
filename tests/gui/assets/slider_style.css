@@ -1,0 +1,41 @@
+/* tighten the whole slider row (optional) */
+#time-slider {
+    padding-top: 4px;     /* less vertical space */
+    padding-bottom: 4px;
+  }
+
+/* rail (inactive track) */
+#time-slider .rc-slider-rail {
+height: 6px;          /* thicker */
+background: #e0e0e0;  /* light grey */
+border-radius: 3px;
+}
+
+/* active track (left of the handle) */
+#time-slider .rc-slider-track {
+height: 6px;
+background: #1565c0;  /* blue */
+border-radius: 3px;
+}
+
+/* draggable handle */
+#time-slider .rc-slider-handle {
+width: 20px;
+height: 20px;
+border: 2px solid #1565c0;
+background: #ffffff;
+margin-top: -8px;     /* centres the handle on the rail */
+box-shadow: none;     /* remove default shadow */
+transition: border-color 0.2s;
+}
+#time-slider .rc-slider-handle:hover,
+#time-slider .rc-slider-handle:active,
+#time-slider .rc-slider-handle:focus {
+border-color: #ff9800;  /* orange on hover/drag */
+outline: none;
+}
+
+/* hide tiny tick marks that appear when you set marks={} */
+#time-slider .rc-slider-dot {
+display: none;
+}
