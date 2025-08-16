@@ -1,10 +1,11 @@
-from src.utils import get_lr
-from src import constants
 import torch
 from pathlib import Path
 
+def get_lr(base_lr: float, batch_size: int, base_batch_size: int = 4) -> float:
+    return base_lr * (batch_size / base_batch_size)
+
 mouse_indices = [0]
-folds = 'all'   # '0,1,2' // 'all'
+folds = '0'   # '0,1,2' (without space) // 'all'
 experiment = Path('new_experiment')
 iter_par = 2
 image_size = (64, 64)
@@ -45,7 +46,7 @@ config = dict(
     init_weights=True,
     argus_params={
         "nn_module": ("dwiseneuro", {
-            "readout_outputs": constants.num_neurons,
+            "readout_outputs": 0,
             "in_channels": 5,
             "core_features": (64, 64, 64, 64,
                               128, 128, 128,

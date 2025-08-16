@@ -1,6 +1,7 @@
 import numpy as np
 from collections import defaultdict
 import json
+from pathlib import Path
 
 from src.phash import calculate_video_phash
 from src.utils import get_length_without_nan
@@ -84,11 +85,11 @@ def save_fold_tiers(mouse: str):
         grouped_folds[fold].append(trial_id)
     grouped_folds = dict(grouped_folds)
     result_dict = {mouse: grouped_folds}
-    with open("Clopath/folds_trials.json", "r") as f:
+    with open(str(Path.home()) + "/Sensorium/Clopath/folds_trials.json", "r") as f:
         saved_data = json.load(f)
     if mouse not in saved_data.keys():
         saved_data.update(result_dict)
-        with open("Clopath/folds_trials.json", "w") as f:
+        with open(str(Path.home()) + "/Sensorium/Clopath/folds_trials.json", "w") as f:
             json.dump(saved_data, f, indent=4)
         
         print('\nFold of each trial of the mouse added in Clopath/folds_trials.json')

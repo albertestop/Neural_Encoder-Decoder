@@ -10,30 +10,28 @@ For long recordings replace the in‑memory `frames_b64` list with a
 /frames/<i>.jpg route or <video> component – see README.
 """
 
-import base64
-import io
-from typing import List
-
-import numpy as np
-import PIL.Image as Image
 import dash
 from dash import dcc, html, Output, Input, State, ctx
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 
 import utils_gui as utils
-
+from load_data import load_data
 import config
 
 FPS: int = 10
 N_FRAMES: int = 100
 
 
+# LOAD DATA
+
+data = load_data(config.plots)
+
+
 # FIGURE GENERATION
 
 BASE_FIG = []
 
-BASE_FIG = utils.gen_figures(config.plots)
+BASE_FIG = utils.gen_figures(config.plots, data)
 
 STORE_ID = "playing-flag"  # shared between callbacks
 
@@ -46,7 +44,7 @@ for i, plot in enumerate(config.plots):
     if plot[1] == 'line':
         children.append(dbc.Row([dbc.Col(dcc.Graph(id=str(i), figure=BASE_FIG[i], config={"displayModeBar": False}), width=12),], class_name="mt-3"))
 
-    elif plot[1] == 'filmstrip':
+    elif plot[1] == 'rp':
         children.append(dbc.Row([dbc.Col(dcc.Graph(id=str(i), figure=BASE_FIG[i], config={"displayModeBar": False}), width=12),], class_name="mt-3"))
 
     elif plot[1] == 'video':
@@ -66,7 +64,7 @@ callbacks = []
 for i, plot in enumerate(config.plots):
     if plot[1] == 'line':
         callbacks.append(Output(str(i), "figure"))
-    elif plot[1] == 'filmstrip':
+    elif plot[1] == 'rp':
         callbacks.append(Output(str(i), "figure"))
     elif plot[1] == 'video':
         callbacks.append(Output(str(i), "src"))

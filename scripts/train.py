@@ -43,6 +43,7 @@ from src.data import get_mouse_data, save_fold_tiers
 from src.mixers import CutMix
 from src import constants
 from src.performance import check_response
+from src.responsiveness import responsiveness
 
 # Configurar PYTORCH_CUDA_ALLOC_CONF al inicio del script
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
@@ -86,22 +87,26 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     # Actualizar readout_outputs en argus_params
     argus_params['nn_module'][1]['readout_outputs'] = num_neurons_to_use  # Usar la lista
 
-    print("Creando modelo...")
+    print('Training model for:')
+    print('Dataset: ' + str(mice_to_use))
+    print('Num neurons: ' + str(num_neurons_to_use))
+
+    #print("Creando modelo...")
     model = MouseModel(argus_params)
     #print_detailed_gpu_memory()
 
-    print("Aplicando DataParallel...")
-    print(f"Using {torch.cuda.device_count()} GPUs!")
+    #print("Aplicando DataParallel...")
+    #print(f"Using {torch.cuda.device_count()} GPUs")
     model = nn.DataParallel(model)
     #print_detailed_gpu_memory()
 
     if config.get("init_weights", False):
-        print("Iniciando inicialización de pesos...")
+        #print("Iniciando inicialización de pesos...")
         init_weights(model.module.nn_module)
         #print_detailed_gpu_memory()
 
     if config.get("ema_decay", False):
-        print(f"Configurando EMA decay: {config['ema_decay']}")
+        #print(f"Configurando EMA decay: {config['ema_decay']}")
         model.module.model_ema = ModelEma(model.module.nn_module, decay=config["ema_decay"])
         checkpoint_class = EmaCheckpoint
     else:
@@ -121,14 +126,14 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         print(f"Modelo de destilación cargado: {str(distill_model_path)}, ratio: {distill_params['ratio']}")
         print_detailed_gpu_memory()
 
-    print("Configurando generadores y procesadores...")
+    #print("Configurando generadores y procesadores...")
     indexes_generator = IndexesGenerator(**argus_params["frame_stack"])
     inputs_processor = get_inputs_processor(*argus_params["inputs_processor"])
     responses_processor = get_responses_processor(*argus_params["responses_processor"])
 
     cutmix = CutMix(**config["cutmix"])
 
-    print("Creando datasets de entrenamiento...")
+    #print("Creando datasets de entrenamiento...")
     train_datasets = []
     mouse_epoch_size = config["train_epoch_size"] // num_mice_used
     for mouse in mice_to_use:
@@ -148,7 +153,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     print(f"Tamaño del dataset de entrenamiento: {len(train_dataset)}")
     #print_detailed_gpu_memory()
 
-    print("Creando datasets de validación...")
+    #print("Creando datasets de validación...")
     val_datasets = []
     for mouse in mice_to_use:
         val_datasets.append(
@@ -164,7 +169,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     print(f"Tamaño del dataset de validación: {len(val_dataset)}")
     #print_detailed_gpu_memory()
 
-    print("Creando DataLoaders...")
+    #print("Creando DataLoaders...")
     train_loader = DataLoader(
         train_dataset,
         batch_size=config["batch_size"],
@@ -177,11 +182,11 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         num_workers=config["num_dataloader_workers"],
         shuffle=False,
     )
-    print("DataLoaders creados.")
+    #print("DataLoaders creados.")
     #print_detailed_gpu_memory()
     
     for num_epochs, stage in zip(config["num_epochs"], config["stages"]):
-        print(f"\nIniciando stage: {stage} por {num_epochs} épocas")
+        print(f"\nStarting {stage} stage for {num_epochs} epochs")
         callbacks = [
             LoggingToFile(save_dir / "log.txt", append=True),
             LoggingToCSV(save_dir / "log.csv", append=True),
@@ -190,13 +195,13 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
 
         num_iterations = (len(train_dataset) // config["batch_size"]) * num_epochs
         if stage == "warmup":
-            print("Configurando LambdaLR para warmup")
+            #print("Configurando LambdaLR para warmup")
             callbacks += [
                 LambdaLR(lambda x: x / num_iterations,
                          step_on_iteration=True),
             ]
         elif stage == "train":
-            print("Configurando checkpoint y CosineAnnealingLR")
+            #print("Configurando checkpoint y CosineAnnealingLR")
             checkpoint_format = "model-{epoch:03d}-{val_corr:.6f}.pth"
             callbacks += [
                 checkpoint_class(save_dir, file_format=checkpoint_format, max_saves=1),
@@ -211,7 +216,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
             CorrelationMetric(),
         ]
 
-        print("Iniciando entrenamiento...")
+        print("Starting Training...")
         model.module.fit(
             train_loader,
             val_loader=val_loader,
@@ -219,9 +224,11 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
             callbacks=callbacks,
             metrics=metrics
         )
-        print("Entrenamiento completado.")
+        print("Train completed.")
 
-        if stage == 'train': check_response(argus_params["device"], save_dir)
+        if stage == 'train': 
+            check_response(argus_params["device"], save_dir)
+            responsiveness(save_dir, mice_to_use[0])
 
 
 
@@ -236,23 +243,16 @@ if __name__ == "__main__":
         folds_splits = [f"fold_{fold}" for fold in train_config.folds.split(",")]
 
     experiment_dir = constants.experiments_dir / train_config.experiment
-    print(f"Directorio del experimento: {experiment_dir}")
+    print(f"Saving experiment in directory: {experiment_dir}")
     if not experiment_dir.exists():
         experiment_dir.mkdir(parents=True, exist_ok=True)
-        print("Directorio del experimento creado.")
-    else:
-        print(f"El directorio del experimento ya existe.")
 
-    # Copiar el script actual al directorio del experimento
     script_path = Path(__file__)
     with open(experiment_dir / "train.py", "w") as outfile:
         outfile.write(script_path.read_text())
-    print("Archivo train.py actualizado en el directorio del experimento.")
 
-    # Guardar la configuración
     shutil.copy('configs/train_config.py', experiment_dir)
     shutil.copy('src/constants.py', experiment_dir)
-    print("Archivo config copiado en el directorio del experimento.")
 
     run_notes = input('Enter any relevant training notes:\n')
     with open(os.path.join(experiment_dir, "run_data.txt"), "w") as file:
@@ -265,18 +265,9 @@ if __name__ == "__main__":
         val_folds_splits = [fold_split]
         train_folds_splits = sorted(set(constants.folds_splits) - set(val_folds_splits))
 
-        print(f"\nFold de validación: {val_folds_splits}")
-        print(f"Folds de entrenamiento: {train_folds_splits}")
-        print(f"Directorio del experimento para este fold: {fold_experiment_dir}")
-
-        # Crear el directorio del fold si no existe
         if not fold_experiment_dir.exists():
             fold_experiment_dir.mkdir(parents=True, exist_ok=True)
-            print(f"Directorio del fold creado.")
-        else:
-            print(f"El directorio del fold ya existe.")
 
-        # Llamar a train_mouse con el índice del ratón
         train_mouse(train_config, fold_experiment_dir, train_folds_splits, val_folds_splits)
 
     print("Entrenamiento completado para todos los ratones.")

@@ -42,6 +42,20 @@ class Video():
         return self.frame_to_b64(self.data[i])
 
 
+def rp_plot(data, N_FRAMES):
+    figure = go.Figure(
+        data=[go.Image(z=data)],
+        layout=go.Layout(
+            template="plotly_white",
+            xaxis=dict(showticklabels=False, range=[0, N_FRAMES]),
+            yaxis=dict(showticklabels=False),
+            margin=dict(l=30, r=10, t=10, b=30),
+            height=150,
+        ),
+    )
+    return figure
+
+
 def line_plot(data, N_FRAMES):
     figure = go.Figure(
         data=[go.Scatter(y=data, mode="lines", line=dict(color="gold"))],
@@ -55,42 +69,21 @@ def line_plot(data, N_FRAMES):
     )
     return figure
 
-def filmstrip_plot(data, N_FRAMES):
-    figure = go.Figure(
-        data=[go.Image(z=data)],
-        layout=go.Layout(
-            template="plotly_white",
-            xaxis=dict(showticklabels=False, range=[0, N_FRAMES]),
-            yaxis=dict(showticklabels=False),
-            margin=dict(l=30, r=10, t=10, b=30),
-            height=150,
-        ),
-    )
-    return figure
 
-def load_data(path):
-    file_ext = path.split('.')[-1]
-    if file_ext == 'npy':
-        return np.load(path)
-    else:
-        raise ValueError('Code not prepared for these file type.')
-
-
-def gen_layout(plot):
-    data = load_data(plot[0])
-    N_frames = data.shape[-1]
+def gen_layout(plot, data_par):
+    N_frames = data_par.shape[-1]
     N_frames = 100
     if plot[1] == 'line':
-        return line_plot(data, N_frames)
-    elif plot[1] == 'filmstrip':
-        return filmstrip_plot(data, N_frames)
+        return line_plot(data_par, N_frames)
+    elif plot[1] == 'rp':
+        return rp_plot(data_par, N_frames)
     elif plot[1] == 'video':
-        return Video(data, N_frames)
+        return Video(data_par, N_frames)
 
 
-def gen_figures(plots):
+def gen_figures(plots, data):
     figs = []
-    for plot in plots:
-        figs.append(gen_layout(plot))
+    for plot, data_par in zip(plots, data):
+        figs.append(gen_layout(plot, data_par))
 
     return figs

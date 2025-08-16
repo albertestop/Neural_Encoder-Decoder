@@ -1,4 +1,5 @@
 from pathlib import Path
+import pandas as pd
 
 home_dir = Path.home()
 work_dir = home_dir / "Sensorium"
@@ -10,13 +11,10 @@ experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
 new_mice = [
-    "2025-04-01_01_ESPM127_002",
-    # "2025-02-26_02_ESPM126_000",
-    # "2025-04-01_01_ESPM127_000",
-    # "dynamic29712",
-    # "dynamic29755",
+    "2025-07-08_04_ESPM152_002",
 ]
-new_num_neurons = [2991]#, 5155, 2991, 7939, 8122]
+df_data = pd.read_csv(sensorium_dir / 'datasets.csv')
+new_num_neurons = df_data[df_data['mouse'].isin(new_mice)].set_index('mouse').loc[new_mice]['n_neurons'].tolist()
 old_mice = [
     # "dynamic29156",
     # "dynamic29228",
@@ -25,29 +23,6 @@ old_mice = [
     # "dynamic29514",
 ]
 old_num_neurons = []
-"""
-Mice:
-dynamic29515, 4668
-2025-03-13_02_ESPM126_000, 5155
-2025-03-26_01_ESPM126_000, 10346
-2025-04-01_01_ESPM127_000, 2991
-2025-02-26_02_ESPM126_000, 2370
-2025-02-26_02_ESPM126_001, 2370
-2025-03-05_02_ESMT204_000, 9
-2025-03-05_02_ESMT204_000_ART_GEN, 9
-2025-03-05_02_ESMT204_001_ART_GEN, 4500
-dynamic29515, 7863
-dynamic29623, 7908
-dynamic29647, 8202
-dynamic29712, 7939
-dynamic29755, 8122
-old mice:
-dynamic29156, 7440,
-dynamic29228, 7928,
-dynamic29234, 8285,
-dynamic29513, 7671,
-dynamic29514, 7495,
-"""
 
 dataset2mice = {
     "new": new_mice,

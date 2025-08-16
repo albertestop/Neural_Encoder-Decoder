@@ -32,7 +32,7 @@ def loss_function_with_mask(responses_predicted, responses, mask=None):
 
 # get a model
 print('get a model')
-model_path = Path('/home/albertestop/Sensorium/data/experiments/train_test_art_video_005/fold_0/model-017-0.932282.pth')
+model_path = Path('/home/albertestop/Sensorium/data/experiments/train_test_015_1/fold_0/model-017-0.278426.pth')
 model = argus.load_model(model_path, device="cuda:0", optimizer=None, loss=None)
 mouse_indexes = [0]
 model.eval() # the input dims for this model are  (batch, channel, time, height, width): (32, 5, 16, 64, 64)...
@@ -129,4 +129,6 @@ for mouse_index in mouse_indexes:
             
             # save mask as variable
             np.save(f'Clopath/reconstructions/masks/mask_{mouse}.npy',mask[0,0].cpu().detach().numpy())
+        
+    print('Saved as mask_' + str(mouse) + '.npy')
                     

@@ -1,12 +1,21 @@
+import os
+import sys
+from pathlib import Path
+import pandas as pd
 import numpy as np
+import shutil
 import matplotlib.pyplot as plt
-from dash import dcc, html, Output, Input, State, ctx
-from PIL import Image
+import json
+import torch
 
-FPS: int = 10
-DURATION_SEC: int = 10
-N_FRAMES: int = FPS * DURATION_SEC
+current_dir = Path(__file__).resolve().parent
+parent_dir = current_dir.parent
+sys.path.append(str(parent_dir))
+from src.predictors import generate_predictors
+from src.data import get_folds_tiers
 
-t_video = np.linspace(0, DURATION_SEC, N_FRAMES, endpoint=False)
-video = (255 * np.random.rand(N_FRAMES, 180, 320, 3)).astype(np.uint8)
-np.save('video.npy', video)
+
+dataset_id = '2025-06-13_01_ESPM135_006'
+
+tiers = get_folds_tiers(dataset_id, 7)
+print(tiers)
