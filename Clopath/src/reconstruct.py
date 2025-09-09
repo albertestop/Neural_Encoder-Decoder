@@ -4,6 +4,7 @@ import Clopath.src.utils_reconstruction as utils
 import cv2
 import numpy as np
 import imageio.v3 as iio
+from scipy.ndimage import gaussian_filter
 
 
 class Reconstructor:
@@ -180,7 +181,7 @@ class Reconstructor:
         return video_pred, loss, gradients_fullvid
 
 
-    def reconstruct_video(self, trial_save_path):
+    def reconstruct_video(self, trial_save_path, smooth):
         
         mp4_path = f'{trial_save_path}/optimized_input.mp4'
         SCALE = 10      # how big each pixel should look
@@ -196,9 +197,19 @@ class Reconstructor:
 
         pixelated = video.repeat(SCALE, axis=1).repeat(SCALE, axis=2)
 
+        smoothed = gaussian_filter(
+            pixelated.astype(np.float32),
+            sigma=(0, SCALE/2, SCALE/2),      # (time, width, height) → no temporal blur
+            mode="reflect"
+        )
+        smoothed = np.clip(smoothed, 0, 255).astype(np.uint8)
+
+        if smooth: video = smoothed
+        else: video = pixelated
+
         iio.imwrite(
             mp4_path,
-            pixelated,
+            video,
             fps=FPS,
             codec="libx264",
             ffmpeg_params=["-pix_fmt", "yuv420p"]

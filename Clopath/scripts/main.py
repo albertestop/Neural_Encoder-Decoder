@@ -154,7 +154,7 @@ def reconstruct():
             evaluator.save_results(
                 strides_all, trial, mask, training_time, video_pred.cpu().detach().numpy()
             )
-            mp4_path = reconstructor.reconstruct_video(trial_save_path)
+            mp4_path = reconstructor.reconstruct_video(trial_save_path, dec_config.smooth)
             video_correlations.append(evaluator.video_corr[-1])
 
             print(f"\nReconstruction completed for mouse {mouse_key}, trial {trial}")
