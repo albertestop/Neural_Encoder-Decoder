@@ -25,6 +25,7 @@ start_trial = 0  # Se refiere al índice del trial en el fold seleccionado
 end_trial = 10  # No incluye este
 random_trials = False  # Si es True, se eligen trials aleatorios; por defecto es False
 video_length = None  # Máximo es 300, pero puede ser demasiado para algunas GPUs
+sleep_mask = 'mask_2025-08-12_01_ESPM164_000.npy'
 check_data_fold = False
 if check_data_fold: 
     if fold_number not in model_list: raise ValueError("This sensorium model was trained using this fold.")
@@ -95,7 +96,7 @@ save_folder = '/reconstructions/results'
 model_path = [None] * 7
 model = [None] * number_models
 
-model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_013_2/fold_0/model-017-0.233516.pth').expanduser()
+model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_009_5/fold_0/model-019-0.244739.pth').expanduser()
 #model_path[0] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_0/model-000-0.290928.pth').expanduser()
 model_path[1] = Path('/home/albertestop/Sensorium/data/experiments/train_test_003/fold_0/model-006-0.135810.pth').expanduser()
 #model_path[1] = Path('/home/antoniofernandez/code/Sensorium/sensorium-v23.11.22/lRomul-sensorium-6849050/data/experiments/true_batch_001/fold_1/model-000-0.292576.pth').expanduser()

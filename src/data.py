@@ -20,23 +20,27 @@ def create_videos_phashes(mouse: str) -> np.ndarray:
     return phashes
 
 
-def get_folds_tiers(mouse: str, num_folds: int):
+def get_folds_tiers(mouse: str, sleep: bool, num_folds: int):
     tiers = np.load(str(constants.sensorium_dir / mouse / "meta" / "trials" / "tiers.npy"))
     tiers = tiers.astype(object)  # Convert to object dtype to allow longer strings.
-    phashes = create_videos_phashes(mouse)
-    if mouse in constants.new_mice:
-        trial_ids = np.argwhere((tiers == "train") | (tiers == "oracle")).ravel()
+    if sleep:
+        for i in range(len(tiers)):
+            tiers[i] = 'fold_0'
     else:
-        trial_ids = np.argwhere(tiers != "none").ravel()
-    for trial_id in trial_ids:
-        fold = int(phashes[trial_id]) % num_folds  # group k-fold by video hash
-        tiers[trial_id] = f"fold_{fold}"
+        phashes = create_videos_phashes(mouse)
+        if mouse in constants.new_mice:
+            trial_ids = np.argwhere((tiers == "train") | (tiers == "oracle")).ravel()
+        else:
+            trial_ids = np.argwhere(tiers != "none").ravel()
+        for trial_id in trial_ids:
+            fold = int(phashes[trial_id]) % num_folds  # group k-fold by video hash
+            tiers[trial_id] = f"fold_{fold}"
     return tiers
 
 
-def get_mouse_data(mouse: str, splits: list[str]) -> dict:
+def get_mouse_data(mouse: str, splits: list[str], sleep: bool) -> dict:
     assert mouse in constants.mice
-    tiers = get_folds_tiers(mouse, constants.num_folds)
+    tiers = get_folds_tiers(mouse, sleep, constants.num_folds)
     mouse_dir = constants.sensorium_dir / mouse
     neuron_ids = np.load(str(mouse_dir / "meta" / "neurons" / "unit_ids.npy"))
     cell_motor_coords = np.load(str(mouse_dir / "meta" / "neurons" / "cell_motor_coordinates.npy"))
@@ -77,8 +81,8 @@ def get_mouse_data(mouse: str, splits: list[str]) -> dict:
     return mouse_data
 
 
-def save_fold_tiers(mouse: str):
-    tiers = get_folds_tiers(mouse, constants.num_folds)
+def save_fold_tiers(mouse: str, sleep: bool):
+    tiers = get_folds_tiers(mouse, sleep, constants.num_folds)
     tiers = np.array([s[-1:] for s in tiers])
     grouped_folds = defaultdict(list)
     for trial_id, fold in enumerate(tiers):

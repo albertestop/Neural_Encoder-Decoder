@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import shutil
+import importlib.util
 
 # Añadir el directorio raíz del proyecto al PYTHONPATH
 project_root = Path(__file__).resolve().parent.parent
@@ -78,6 +79,11 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     config = copy.deepcopy(train_config.config)
     argus_params = config["argus_params"]
 
+    proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + constants.mice[0] + "/config.py"
+    spec = importlib.util.spec_from_file_location("proc_config", proc_config_path)
+    proc_config = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(proc_config)
+
     # Seleccionar solo el ratón indicado por mouse_index
     mouse_indices = train_config.mouse_indices
     mice_to_use = [constants.mice[i] for i in mouse_indices]
@@ -91,22 +97,17 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     print('Dataset: ' + str(mice_to_use))
     print('Num neurons: ' + str(num_neurons_to_use))
 
-    #print("Creando modelo...")
     model = MouseModel(argus_params)
     #print_detailed_gpu_memory()
 
-    #print("Aplicando DataParallel...")
-    #print(f"Using {torch.cuda.device_count()} GPUs")
     model = nn.DataParallel(model)
     #print_detailed_gpu_memory()
 
     if config.get("init_weights", False):
-        #print("Iniciando inicialización de pesos...")
         init_weights(model.module.nn_module)
         #print_detailed_gpu_memory()
 
     if config.get("ema_decay", False):
-        #print(f"Configurando EMA decay: {config['ema_decay']}")
         model.module.model_ema = ModelEma(model.module.nn_module, decay=config["ema_decay"])
         checkpoint_class = EmaCheckpoint
     else:
@@ -126,21 +127,19 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         print(f"Modelo de destilación cargado: {str(distill_model_path)}, ratio: {distill_params['ratio']}")
         print_detailed_gpu_memory()
 
-    #print("Configurando generadores y procesadores...")
     indexes_generator = IndexesGenerator(**argus_params["frame_stack"])
     inputs_processor = get_inputs_processor(*argus_params["inputs_processor"])
     responses_processor = get_responses_processor(*argus_params["responses_processor"])
 
     cutmix = CutMix(**config["cutmix"])
 
-    #print("Creando datasets de entrenamiento...")
     train_datasets = []
     mouse_epoch_size = config["train_epoch_size"] // num_mice_used
     for mouse in mice_to_use:
         train_datasets.append(
             TrainMouseVideoDataset(
                 load_params=train_config.data_load,
-                mouse_data=get_mouse_data(mouse=mouse, splits=train_splits),
+                mouse_data=get_mouse_data(mouse=mouse, splits=train_splits, sleep=proc_config.data['sleep']),
                 indexes_generator=indexes_generator,
                 inputs_processor=inputs_processor,
                 responses_processor=responses_processor,
@@ -153,13 +152,12 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     print(f"Tamaño del dataset de entrenamiento: {len(train_dataset)}")
     #print_detailed_gpu_memory()
 
-    #print("Creando datasets de validación...")
     val_datasets = []
     for mouse in mice_to_use:
         val_datasets.append(
             ValMouseVideoDataset(
                 load_params=train_config.data_load,
-                mouse_data=get_mouse_data(mouse=mouse, splits=val_splits),
+                mouse_data=get_mouse_data(mouse=mouse, splits=val_splits, sleep=proc_config.data['sleep']),
                 indexes_generator=indexes_generator,
                 inputs_processor=inputs_processor,
                 responses_processor=responses_processor,
@@ -169,7 +167,6 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
     print(f"Tamaño del dataset de validación: {len(val_dataset)}")
     #print_detailed_gpu_memory()
 
-    #print("Creando DataLoaders...")
     train_loader = DataLoader(
         train_dataset,
         batch_size=config["batch_size"],
@@ -182,7 +179,6 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         num_workers=config["num_dataloader_workers"],
         shuffle=False,
     )
-    #print("DataLoaders creados.")
     #print_detailed_gpu_memory()
     
     for num_epochs, stage in zip(config["num_epochs"], config["stages"]):
@@ -195,13 +191,11 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
 
         num_iterations = (len(train_dataset) // config["batch_size"]) * num_epochs
         if stage == "warmup":
-            #print("Configurando LambdaLR para warmup")
             callbacks += [
                 LambdaLR(lambda x: x / num_iterations,
                          step_on_iteration=True),
             ]
         elif stage == "train":
-            #print("Configurando checkpoint y CosineAnnealingLR")
             checkpoint_format = "model-{epoch:03d}-{val_corr:.6f}.pth"
             callbacks += [
                 checkpoint_class(save_dir, file_format=checkpoint_format, max_saves=1),

@@ -2,6 +2,9 @@ from pathlib import Path
 import torch
 import Clopath.src.utils_reconstruction as utils
 import cv2
+import numpy as np
+import imageio.v3 as iio
+
 
 class Reconstructor:
     def __init__(self, device, number_models, mask_update_expanded, population_mask,
@@ -178,25 +181,27 @@ class Reconstructor:
 
 
     def reconstruct_video(self, trial_save_path):
-
-        # Leer el archivo TIFF usando el mismo nombre de archivo
-        tif_path = Path(f'{trial_save_path}/optimized_input.tif')
+        
         mp4_path = f'{trial_save_path}/optimized_input.mp4'
+        SCALE = 10      # how big each pixel should look
+        FPS = 30
 
-        # Asegurarse de que el archivo TIFF existe
-        if not tif_path.exists():
-            raise FileNotFoundError(f"The TIFF file {tif_path} does not exist.")
+        rec_array = np.load(f'{trial_save_path}/reconstruction_array.npy')
 
-        tif_frames = cv2.imreadmulti(str(tif_path))[1]
-        if not tif_frames:
-            raise FileNotFoundError(f"No frames found in the TIFF file at {tif_path}. Please ensure the file exists and contains data.")
+        x = np.asarray(rec_array)
+        if x.dtype != np.uint8:
+            if np.issubdtype(x.dtype, np.floating) and x.min() >= 0 and x.max() <= 1:
+                x = (x * 255).round()
+            video = np.clip(x, 0, 255).astype(np.uint8)
 
-        height, width = tif_frames[0].shape
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video_output = cv2.VideoWriter(str(mp4_path), fourcc, 30, (width, height))
+        pixelated = video.repeat(SCALE, axis=1).repeat(SCALE, axis=2)
 
-        for frame in tif_frames:
-            video_output.write(cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR))
-        video_output.release()
+        iio.imwrite(
+            mp4_path,
+            pixelated,
+            fps=FPS,
+            codec="libx264",
+            ffmpeg_params=["-pix_fmt", "yuv420p"]
+        )
 
         return mp4_path

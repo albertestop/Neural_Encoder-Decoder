@@ -6,6 +6,7 @@ import numpy as np
 import torch
 import time
 from tqdm import tqdm
+import importlib.util
 
 current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
@@ -20,6 +21,12 @@ from Clopath.src.data_loading import *
 from Clopath.src.eval import Evaluator
 from Clopath.src.predict import Predict
 from Clopath.src.reconstruct import Reconstructor
+
+proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + constants.mice[0] + "/config.py"
+spec = importlib.util.spec_from_file_location("proc_config", proc_config_path)
+proc_config = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(proc_config)
+
 
 def reconstruct():
     import Clopath.scripts.config as dec_config
@@ -42,11 +49,12 @@ def reconstruct():
         mouse_save_path = execution_save_path + '/' + constants.mice[mouse_index]
         if not os.path.isdir(mouse_save_path): os.mkdir(mouse_save_path)
         mouse_key = constants.mice[mouse_index]
-        save_fold_tiers(mouse_key)
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
-        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold])
+        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], sleep=proc_config.data['sleep'])
         mask_name = 'mask_' + mouse_key + '.npy'
+        if proc_config.data['sleep']: 
+            mask_name = dec_config.sleep_mask
         mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
         mask_update = torch.tensor(np.where(mask >= dec_config.mask_update_th, 1, 0)).to(device) # mask for gradients
         mask_eval = torch.tensor(np.where(mask >= dec_config.mask_eval_th, 1, 0)).to(device) # mask for pixels

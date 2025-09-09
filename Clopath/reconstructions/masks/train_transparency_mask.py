@@ -32,7 +32,7 @@ def loss_function_with_mask(responses_predicted, responses, mask=None):
 
 # get a model
 print('get a model')
-model_path = Path('/home/albertestop/Sensorium/data/experiments/train_test_015_1/fold_0/model-017-0.278426.pth')
+model_path = Path('/home/albertestop/Sensorium/data/experiments/train_test_019/fold_0/model-017-0.128331.pth')
 model = argus.load_model(model_path, device="cuda:0", optimizer=None, loss=None)
 mouse_indexes = [0]
 model.eval() # the input dims for this model are  (batch, channel, time, height, width): (32, 5, 16, 64, 64)...
@@ -49,7 +49,7 @@ print('get a batch')
 for mouse_index in mouse_indexes:
     mouse_index = mouse_index
     mouse = constants.index2mouse[mouse_index]
-    mouse_data = get_mouse_data(mouse=mouse, splits=[datafold])
+    mouse_data = get_mouse_data(mouse=mouse, splits=[datafold], sleep=False)
     trial_data_all=mouse_data['trials']
     
     # define preditor which tracks gradients
