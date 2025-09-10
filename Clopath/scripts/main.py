@@ -51,10 +51,10 @@ def reconstruct():
         mouse_key = constants.mice[mouse_index]
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
-        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], sleep=proc_config.data['sleep'])
+        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], s_type=proc_config.data['s_type'])
         mask_name = 'mask_' + mouse_key + '.npy'
-        if proc_config.data['sleep']: 
-            mask_name = dec_config.sleep_mask
+        if proc_config.data['s_type'] in ('sleep', 'er'):
+            mask_name = dec_config.pretrained_mask
         mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
         mask_update = torch.tensor(np.where(mask >= dec_config.mask_update_th, 1, 0)).to(device) # mask for gradients
         mask_eval = torch.tensor(np.where(mask >= dec_config.mask_eval_th, 1, 0)).to(device) # mask for pixels
@@ -154,7 +154,7 @@ def reconstruct():
             evaluator.save_results(
                 strides_all, trial, mask, training_time, video_pred.cpu().detach().numpy()
             )
-            mp4_path = reconstructor.reconstruct_video(trial_save_path, dec_config.smooth, evaluator.ground_truth, mask_eval.cpu().detach().numpy(), evaluator.concat_video)
+            mp4_path = reconstructor.reconstruct_video(trial_save_path, dec_config.smooth, evaluator.concat_video)
             video_correlations.append(evaluator.video_corr[-1])
 
             print(f"\nReconstruction completed for mouse {mouse_key}, trial {trial}")
