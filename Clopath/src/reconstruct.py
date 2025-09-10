@@ -181,31 +181,21 @@ class Reconstructor:
         return video_pred, loss, gradients_fullvid
 
 
-    def reconstruct_video(self, trial_save_path, smooth):
+    def reconstruct_video(self, trial_save_path, smooth, concat_video):
         
         mp4_path = f'{trial_save_path}/optimized_input.mp4'
         SCALE = 10      # how big each pixel should look
         FPS = 30
+    
+        concat_video = concat_video.repeat(SCALE, axis=1).repeat(SCALE, axis=2)
 
-        rec_array = np.load(f'{trial_save_path}/reconstruction_array.npy')
-
-        x = np.asarray(rec_array)
-        if x.dtype != np.uint8:
-            if np.issubdtype(x.dtype, np.floating) and x.min() >= 0 and x.max() <= 1:
-                x = (x * 255).round()
-            video = np.clip(x, 0, 255).astype(np.uint8)
-
-        pixelated = video.repeat(SCALE, axis=1).repeat(SCALE, axis=2)
-
-        smoothed = gaussian_filter(
-            pixelated.astype(np.float32),
-            sigma=(0, SCALE/2, SCALE/2),      # (time, width, height) → no temporal blur
-            mode="reflect"
-        )
-        smoothed = np.clip(smoothed, 0, 255).astype(np.uint8)
-
-        if smooth: video = smoothed
-        else: video = pixelated
+        if smooth: 
+            video = gaussian_filter(
+                concat_video.astype(np.float32),
+                sigma=(0, SCALE/2, SCALE/2),      # no temporal blur
+                mode="reflect"
+            )
+        else: video = concat_video
 
         iio.imwrite(
             mp4_path,

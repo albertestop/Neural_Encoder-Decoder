@@ -182,6 +182,7 @@ class Evaluator():
                 f'{self.trial_save_path}/optimized_input.tif',
                 mask=mask_cropped
             )
+            self.ground_truth = ground_truth
             
             self.video_corr.append(im_sim.reconstruction_video_corr(
                 ground_truth[self.eval_frame_skip:], reconstruction[self.eval_frame_skip:], mask_cropped))
