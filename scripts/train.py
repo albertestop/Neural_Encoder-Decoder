@@ -139,7 +139,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         train_datasets.append(
             TrainMouseVideoDataset(
                 load_params=train_config.data_load,
-                mouse_data=get_mouse_data(mouse=mouse, splits=train_splits, sleep=proc_config.data['sleep']),
+                mouse_data=get_mouse_data(mouse=mouse, splits=train_splits, s_type=proc_config.data['s_type']),
                 indexes_generator=indexes_generator,
                 inputs_processor=inputs_processor,
                 responses_processor=responses_processor,
@@ -157,7 +157,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         val_datasets.append(
             ValMouseVideoDataset(
                 load_params=train_config.data_load,
-                mouse_data=get_mouse_data(mouse=mouse, splits=val_splits, sleep=proc_config.data['sleep']),
+                mouse_data=get_mouse_data(mouse=mouse, splits=val_splits, s_type=proc_config.data['s_type']),
                 indexes_generator=indexes_generator,
                 inputs_processor=inputs_processor,
                 responses_processor=responses_processor,
@@ -222,7 +222,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
 
         if stage == 'train': 
             check_response(argus_params["device"], save_dir)
-            responsiveness(save_dir, mice_to_use[0])
+            responsiveness(save_dir, mice_to_use[0], val_splits[0])
 
 
 

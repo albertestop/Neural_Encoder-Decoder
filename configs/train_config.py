@@ -39,7 +39,7 @@ config = dict(
     base_lr=base_lr,
     min_base_lr=base_lr * 0.01,
     ema_decay=0.999,
-    train_epoch_size=16000,
+    train_epoch_size=8000,
     num_epochs=[3, 18],
     stages=["warmup", "train"],
     num_dataloader_workers=4 * num_gpus,  # Ajustamos el número de workers basado en las GPUs
@@ -73,7 +73,7 @@ config = dict(
             "lr": get_lr(base_lr, batch_size),
             "weight_decay": 0.05,
         }),
-        "device": "cuda:0",  # DDP manejará la asignación específica del dispositivo
+        "device": "cuda:1",  # DDP manejará la asignación específica del dispositivo
         "frame_stack": {
             "size": frame_stack_size,
             "step": 2,

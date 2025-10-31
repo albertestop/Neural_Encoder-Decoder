@@ -12,7 +12,7 @@ sys.path.append(str(Path.home() / Path('Sensorium')))
 from src.predictors import generate_predictors
 
 
-def responsiveness(model_dir, dataset_id):
+def responsiveness(model_dir, dataset_id, val_split):
 
     save_path = os.path.join(model_dir, 'responsiveness')
 
@@ -21,7 +21,7 @@ def responsiveness(model_dir, dataset_id):
     data_dir = str(Path.home()) + '/data/processed_data/sensorium_all_2023/' + dataset_id
     with open(str(Path.home()) + '/Sensorium/Clopath/folds_trials.json', 'r') as f:
         fold_data = json.load(f)
-    trials = fold_data[dataset_id].get('0', [])
+    trials = fold_data[dataset_id].get(str(val_split[-1]), [])
 
     model_name = [f for f in os.listdir(model_dir) if f.endswith(".pth")][0]
     model_path = str(model_dir) + '/' + model_name

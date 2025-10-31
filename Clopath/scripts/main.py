@@ -21,6 +21,7 @@ from Clopath.src.data_loading import *
 from Clopath.src.eval import Evaluator
 from Clopath.src.predict import Predict
 from Clopath.src.reconstruct import Reconstructor
+from Clopath.reconstructions.masks.train_transparency_mask import train_mask
 
 proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + constants.mice[0] + "/config.py"
 spec = importlib.util.spec_from_file_location("proc_config", proc_config_path)
@@ -51,11 +52,16 @@ def reconstruct():
         mouse_key = constants.mice[mouse_index]
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
-        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], sleep=proc_config.data['sleep'])
-        mask_name = 'mask_' + mouse_key + '.npy'
-        if proc_config.data['sleep']: 
-            mask_name = dec_config.sleep_mask
+        mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], s_type=proc_config.data['s_type'])
+        """if proc_config.data['s_type'] in ('sleep', 'er', 'recons'):
+            """
+        mask_name = dec_config.pretrained_mask
         mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
+        """
+        else:
+            train_mask(dec_config.model_path[0], dec_config.animals, dec_config.data_fold)
+            mask_name = 'mask_' + mouse_key + '.npy'
+            mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))"""
         mask_update = torch.tensor(np.where(mask >= dec_config.mask_update_th, 1, 0)).to(device) # mask for gradients
         mask_eval = torch.tensor(np.where(mask >= dec_config.mask_eval_th, 1, 0)).to(device) # mask for pixels
 
@@ -154,7 +160,7 @@ def reconstruct():
             evaluator.save_results(
                 strides_all, trial, mask, training_time, video_pred.cpu().detach().numpy()
             )
-            mp4_path = reconstructor.reconstruct_video(trial_save_path, dec_config.smooth, evaluator.ground_truth, mask_eval.cpu().detach().numpy(), evaluator.concat_video)
+            mp4_path = reconstructor.reconstruct_video(trial_save_path, dec_config.smooth, evaluator.concat_video)
             video_correlations.append(evaluator.video_corr[-1])
 
             print(f"\nReconstruction completed for mouse {mouse_key}, trial {trial}")
@@ -165,8 +171,12 @@ def reconstruct():
 
         print(video_correlations)
 
-        with open(os.path.join(mouse_save_path, "rec_perf.txt"), "w") as file:
-            file.write('Reconstruction mean corr: ' + str(np.array(video_correlations).mean()))
+        if proc_config.data['s_type'] not in ('sleep', 'er'):
+            with open(os.path.join(mouse_save_path, "rec_perf.txt"), "w") as file:
+                file.write('Reconstruction mean corr: ' + str(np.array(video_correlations).mean()))
+
+    if proc_config.data['s_type'] in ('sleep', 'er'):
+        reconstructor.reconstruct_whole_session(mouse_save_path, proc_config)
 
     print("Reconstruction process completed for all mice and trials.")
     return np.array(video_correlations), execution_save_path

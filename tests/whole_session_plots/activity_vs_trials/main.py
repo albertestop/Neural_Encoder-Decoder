@@ -5,15 +5,6 @@ import pandas as pd
 import numpy as np
 import shutil
 import matplotlib.pyplot as plt
-import json
-import torch
-
-current_dir = Path(__file__).resolve().parent
-parent_dir = current_dir.parent
-sys.path.append(str(parent_dir))
-from src.predictors import generate_predictors
-from src.data import get_folds_tiers
-import random
 import pickle
 
 animal = 'ESPM163'
@@ -21,11 +12,13 @@ session = '2025-08-07_05_ESPM163'
 exp_directory = '/home/melinatimplalexi/data/Repository/'
 session_dir = str(os.path.join(exp_directory, animal, session))
 
-with open(os.path.join(session_dir, 'recordings', 's2p_ch0.pickle'), 'rb') as file:
+with open(os.path.join(session_dir, 'recordings', 's2p_oasis_ch0.pickle'), 'rb') as file:
     file = pickle.load(file)
-spikes = np.array(file['Spikes']).astype(np.float32)
+spikes = np.array(file['oasis_spikes']).astype(np.float32)
 time = np.array(file['t']).astype(np.float32)
 mean_act = spikes.mean(axis=0)
+print(np.isnan(spikes).sum())
+print(np.isnan(spikes).sum()/(len(spikes[0, :])))
 
 session_df = pd.read_csv(os.path.join(session_dir, session + '_all_trials.csv'))
 trial_t0 = np.array(session_df['time'])

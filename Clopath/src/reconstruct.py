@@ -1,10 +1,13 @@
 from pathlib import Path
+import os
 import torch
 import Clopath.src.utils_reconstruction as utils
 import cv2
 import numpy as np
 import imageio.v3 as iio
 from scipy.ndimage import gaussian_filter
+from Clopath.src.utils_er import *
+import pandas as pd
 
 
 class Reconstructor:
@@ -197,12 +200,61 @@ class Reconstructor:
             )
         else: video = concat_video
 
+        np.save(f'{trial_save_path}/video_array.npy', video)
+
         iio.imwrite(
             mp4_path,
-            video,
+            video.astype(np.uint8),
             fps=FPS,
             codec="libx264",
             ffmpeg_params=["-pix_fmt", "yuv420p"]
         )
 
         return mp4_path
+
+    
+    def reconstruct_whole_session(self, run_path, proc_config):
+        segments = [name for name in os.listdir(run_path)
+           if os.path.isdir(os.path.join(run_path, name))]
+
+        reconstruction = []
+
+        for segment in segments:
+            video = np.load(run_path + '/' + segment + '/video_array.npy')
+            reconstruction.append(video[30:-30, :, :])
+
+        video = np.array(reconstruction)        # shape will be (10, 30, 4, 4)
+        video = video.reshape(-1, 720, 640)
+
+        if proc_config.data['s_type'] == 'er':
+            session_df = pd.read_csv(os.path.join(proc_config.data['session_dir'], proc_config.data['session'] + '_all_trials.csv'))
+            pr_videos = []
+            for t_0, stim, duration, F1_angle, F1_contrast, F2_angle, F2_contrast in zip(
+                session_df['time'], session_df['stim'], session_df['duration'], session_df['F1_angle'], session_df['F1_contrast'], session_df['F2_angle'], session_df['F2_contrast']
+                ):
+                trial_data = []
+                trial_data.append(t_0)
+                trial_video = generate_projections(stim, duration, F1_angle, F1_contrast, F2_angle, F2_contrast)
+                trial_data.append(trial_video)
+                pr_videos.append(trial_data)
+            
+            for trial in pr_videos:
+                t_0 = trial[0]
+                tr_video = trial[1]
+                t_0_frame = int(t_0 * 30)
+                t_f_frame = t_0_frame + tr_video.shape[0]
+                video[t_0_frame:t_f_frame,0:360, :] = tr_video
+    
+
+        iio.imwrite(
+            run_path + '/session_recons.mp4',
+            video.astype(np.uint8),
+            fps=30,
+            codec="libx264",
+            ffmpeg_params=["-pix_fmt", "yuv420p"]
+        )
+
+
+
+            
+

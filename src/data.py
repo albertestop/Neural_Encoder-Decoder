@@ -20,10 +20,10 @@ def create_videos_phashes(mouse: str) -> np.ndarray:
     return phashes
 
 
-def get_folds_tiers(mouse: str, sleep: bool, num_folds: int):
+def get_folds_tiers(mouse: str, s_type: bool, num_folds: int):
     tiers = np.load(str(constants.sensorium_dir / mouse / "meta" / "trials" / "tiers.npy"))
     tiers = tiers.astype(object)  # Convert to object dtype to allow longer strings.
-    if sleep:
+    if s_type in ('sleep', 'er'):
         for i in range(len(tiers)):
             tiers[i] = 'fold_0'
     else:
@@ -38,9 +38,9 @@ def get_folds_tiers(mouse: str, sleep: bool, num_folds: int):
     return tiers
 
 
-def get_mouse_data(mouse: str, splits: list[str], sleep: bool) -> dict:
+def get_mouse_data(mouse: str, splits: list[str], s_type: bool) -> dict:
     assert mouse in constants.mice
-    tiers = get_folds_tiers(mouse, sleep, constants.num_folds)
+    tiers = get_folds_tiers(mouse, s_type, constants.num_folds)
     mouse_dir = constants.sensorium_dir / mouse
     neuron_ids = np.load(str(mouse_dir / "meta" / "neurons" / "unit_ids.npy"))
     cell_motor_coords = np.load(str(mouse_dir / "meta" / "neurons" / "cell_motor_coordinates.npy"))
@@ -53,6 +53,11 @@ def get_mouse_data(mouse: str, splits: list[str], sleep: bool) -> dict:
         "cell_motor_coordinates": cell_motor_coords,
         "trials": [],
     }
+
+    if s_type == 'recons':
+        splits = []
+        for i in range(7):
+            splits.append('fold_' + str(i))
 
     for split in splits:
         if split in constants.folds_splits:
@@ -81,8 +86,8 @@ def get_mouse_data(mouse: str, splits: list[str], sleep: bool) -> dict:
     return mouse_data
 
 
-def save_fold_tiers(mouse: str, sleep: bool):
-    tiers = get_folds_tiers(mouse, sleep, constants.num_folds)
+def save_fold_tiers(mouse: str, s_type: str):
+    tiers = get_folds_tiers(mouse, s_type, constants.num_folds)
     tiers = np.array([s[-1:] for s in tiers])
     grouped_folds = defaultdict(list)
     for trial_id, fold in enumerate(tiers):
