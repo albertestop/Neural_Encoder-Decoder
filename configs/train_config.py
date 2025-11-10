@@ -5,7 +5,7 @@ def get_lr(base_lr: float, batch_size: int, base_batch_size: int = 4) -> float:
     return base_lr * (batch_size / base_batch_size)
 
 mouse_indices = [0]
-folds = '0'   # '0,1,2' (without space) // 'all'
+folds = '4,5,6'   # '0,1,2' (without space) // 'all'
 experiment = Path('new_experiment')
 iter_par = 2
 image_size = (64, 64)

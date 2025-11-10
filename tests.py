@@ -13,30 +13,37 @@ parent_dir = current_dir.parent
 sys.path.append(str(parent_dir))
 from src.predictors import generate_predictors
 from src.data import get_folds_tiers
+from src.responsiveness import responsiveness
 import random
 import pickle
+import imageio.v3 as iio
+
 
 animal = 'ESPM163'
-session = '2025-08-07_05_ESPM163'
+session = '2025-08-07_01_ESPM163'
 exp_directory = '/home/melinatimplalexi/data/Repository/'
 session_dir = str(os.path.join(exp_directory, animal, session))
 
-with open(os.path.join(session_dir, 'recordings', 's2p_ch0.pickle'), 'rb') as file:
-    file = pickle.load(file)
-spikes = np.array(file['Spikes']).astype(np.float32)
-time = np.array(file['t']).astype(np.float32)
-mean_act = spikes.mean(axis=0)
 
-session_df = pd.read_csv(os.path.join(session_dir, session + '_all_trials.csv'))
-trial_t0 = np.array(session_df['time'])
-durations = np.array(session_df['duration'])
+run_path = '/home/albertestop/Sensorium/Clopath/reconstructions/results/172/2025-07-04_06_ESPM154_004'
+segments = [name for name in os.listdir(run_path)
+    if os.path.isdir(os.path.join(run_path, name))]
+segments = sorted(segments, key=int)
+segments = segments[:-1]
 
-fig, ax = plt.subplots(figsize=(200, 10))
+reconstruction = []
 
-for t_0, duration in zip(trial_t0, durations):
-    plt.axvspan(t_0, t_0 + duration, alpha=0.2)
+for segment in segments:
+    video = np.load(run_path + '/' + segment + '/video_array.npy')
+    reconstruction.append(video[30:-30, :, :])
 
-plt.plot(time, mean_act)
-ax.set_xticks(np.arange(0, time[-1], 4))
+video = np.array(reconstruction)        # shape will be (10, 30, 4, 4)
+video = video.reshape(-1, 720, 640)
 
-plt.savefig('delete.png')
+iio.imwrite(
+    run_path + '/session_recons.mp4',
+    video.astype(np.uint8),
+    fps=30,
+    codec="libx264",
+    ffmpeg_params=["-pix_fmt", "yuv420p"]
+)

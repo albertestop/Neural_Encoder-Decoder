@@ -216,6 +216,7 @@ class Reconstructor:
     def reconstruct_whole_session(self, run_path, proc_config):
         segments = [name for name in os.listdir(run_path)
            if os.path.isdir(os.path.join(run_path, name))]
+        segments = sorted(segments, key=int)
 
         reconstruction = []
 

@@ -52,31 +52,31 @@ def responsiveness(model_dir, dataset_id, val_split):
 
         for neuron in range(prediction.shape[0]):
 
-            corr = np.corrcoef(response[neuron], prediction[neuron])[0, 1]
+            if np.all(response[neuron] == 0): 
+                corr = 0
+            else: 
+                corr = np.corrcoef(response[neuron], prediction[neuron])[0, 1]
             
             correlations_trial.append(corr)
 
         correlations.append(correlations_trial)
 
     correlations = np.array(correlations)
-    correlations = np.mean(correlations, axis=0)
+
+    correlations = np.nanmean(correlations, axis=0)
+    np.save(os.path.join(save_path, 'neuron_corr.npy'), correlations)
     
     mean_corr = correlations.mean()
     corr_10_idx = np.where(correlations > 0.1)
     corr_10 = len(correlations[corr_10_idx])
-    np.save(os.path.join(save_path, 'corr_gr_10.npy'), corr_10_idx)
     corr_25_idx = np.where(correlations > 0.25)
     corr_25 = len(correlations[corr_25_idx])
-    np.save(os.path.join(save_path, 'corr_gr_25.npy'), corr_25_idx)
     corr_40_idx = np.where(correlations > 0.40)
     corr_40 = len(correlations[corr_40_idx])
-    np.save(os.path.join(save_path, 'corr_gr_40.npy'), corr_40_idx)
     corr_55_idx = np.where(correlations > 0.55)
     corr_55 = len(correlations[corr_55_idx])
-    np.save(os.path.join(save_path, 'corr_gr_55.npy'), corr_55_idx)
     corr_70_idx = np.where(correlations > 0.70)
     corr_70 = len(correlations[corr_70_idx])
-    np.save(os.path.join(save_path, 'corr_gr_70.npy'), corr_70_idx)
 
     plt.cla()
     plt.clf()

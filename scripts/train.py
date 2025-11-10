@@ -45,6 +45,7 @@ from src.mixers import CutMix
 from src import constants
 from src.performance import check_response
 from src.responsiveness import responsiveness
+from src.plane_correlations import plane_correlations
 
 # Configurar PYTORCH_CUDA_ALLOC_CONF al inicio del script
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
@@ -223,6 +224,7 @@ def train_mouse(train_config, save_dir: Path, train_splits: list[str], val_split
         if stage == 'train': 
             check_response(argus_params["device"], save_dir)
             responsiveness(save_dir, mice_to_use[0], val_splits[0])
+            plane_correlations(save_dir, proc_config.data['session_dir'])
 
 
 

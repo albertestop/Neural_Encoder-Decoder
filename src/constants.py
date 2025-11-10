@@ -11,7 +11,7 @@ experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
 new_mice = [
-    "2025-08-07_01_ESPM163_010",
+    "2025-07-04_06_ESPM154_004",
 ]
 df_data = pd.read_csv(sensorium_dir / 'datasets.csv')
 new_num_neurons = df_data[df_data['mouse'].isin(new_mice)].set_index('mouse').loc[new_mice]['n_neurons'].tolist()

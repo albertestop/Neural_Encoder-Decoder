@@ -53,15 +53,14 @@ def reconstruct():
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
         mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], s_type=proc_config.data['s_type'])
-        """if proc_config.data['s_type'] in ('sleep', 'er', 'recons'):
-            """
-        mask_name = dec_config.pretrained_mask
-        mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
-        """
+        
+        if proc_config.data['s_type'] in ('sleep', 'er', 'recons'):
+            mask_name = dec_config.pretrained_mask
         else:
-            train_mask(dec_config.model_path[0], dec_config.animals, dec_config.data_fold)
             mask_name = 'mask_' + mouse_key + '.npy'
-            mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))"""
+            if not (parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name)).exists():
+                train_mask(dec_config.model_path[0], dec_config.animals, dec_config.data_fold)   
+        mask = np.load(parent_dir / Path(f'Clopath/reconstructions/masks/' + mask_name))
         mask_update = torch.tensor(np.where(mask >= dec_config.mask_update_th, 1, 0)).to(device) # mask for gradients
         mask_eval = torch.tensor(np.where(mask >= dec_config.mask_eval_th, 1, 0)).to(device) # mask for pixels
 
