@@ -9,7 +9,7 @@ import json
 import torch
 
 current_dir = Path(__file__).resolve().parent
-parent_dir = current_dir.parent
+parent_dir = current_dir.parent.parent.parent
 sys.path.append(str(parent_dir))
 from src.predictors import generate_predictors
 from src.data import get_folds_tiers
@@ -17,12 +17,6 @@ from src.responsiveness import responsiveness
 import random
 import pickle
 import imageio.v3 as iio
-
-
-animal = 'ESPM163'
-session = '2025-08-07_01_ESPM163'
-exp_directory = '/home/melinatimplalexi/data/Repository/'
-session_dir = str(os.path.join(exp_directory, animal, session))
 
 
 run_path = '/home/albertestop/Sensorium/Clopath/reconstructions/results/172/2025-07-04_06_ESPM154_004'
