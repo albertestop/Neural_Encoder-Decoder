@@ -6,7 +6,7 @@ from pathlib import Path
 
 randomize_models = False  # Si es True, se generan modelos aleatorios; si es False, se usan los modelos proporcionados
 num_random_models = 2  # Número de modelos aleatorios a generar si randomize_models es True
-user_model_list = np.array([0, 1, 2, 3, 4, 5, 6])  # Lista de modelos proporcionada por el usuario
+user_model_list = np.array([0])  # Lista de modelos proporcionada por el usuario
 if randomize_models:
     model_list = np.random.choice(range(7), num_random_models, replace=False)
 else:
@@ -21,8 +21,8 @@ fold_file_path = Path('folds_trials.json')
 fold_number = 0  # Definir el número de fold
 fold_of_interest = str(fold_number)
 data_fold = f'fold_{fold_number}'
-start_trial = 70  # Se refiere al índice del trial en el fold seleccionado
-end_trial = 1000  # No incluye este
+start_trial = 0  # Se refiere al índice del trial en el fold seleccionado
+end_trial = 10  # No incluye este
 random_trials = False  # Si es True, se eligen trials aleatorios; por defecto es False
 video_length = None  # Máximo es 300, pero puede ser demasiado para algunas GPUs
 pretrained_mask = 'mask_2025-07-04_04_ESPM154_004.npy'  # not used for movie sessions
@@ -97,7 +97,7 @@ save_folder = '/reconstructions/results'
 model_path = [None] * 7
 model = [None] * number_models
 
-model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_0/model-017-0.268704.pth').expanduser()
+model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_012_4/fold_0/model-017-0.281922.pth').expanduser()
 model_path[1] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_1/model-017-0.311331.pth').expanduser()
 model_path[2] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_2/model-017-0.285869.pth').expanduser()
 model_path[3] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_3/model-017-0.262061.pth').expanduser()

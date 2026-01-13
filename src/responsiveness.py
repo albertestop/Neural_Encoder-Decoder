@@ -99,7 +99,7 @@ def responsiveness(model_dir, dataset_id, val_split):
 
 if __name__ == '__main__':
     
-    model_dir = '/home/albertestop/Sensorium/data/experiments/new_experiment/fold_0/'
-    dataset_id = '2025-04-01_01_ESPM127_005'
+    model_dir = '/home/albertestop/Sensorium/data/experiments/train_test_012_4_wrong_video/fold_0/'
+    dataset_id = '2025-07-02_03_ESPM135_004_wrong_video'
 
-    responsiveness(model_dir, dataset_id)
+    responsiveness(model_dir, dataset_id, [0])

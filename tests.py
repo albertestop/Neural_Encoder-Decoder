@@ -17,39 +17,17 @@ from src.responsiveness import responsiveness
 import random
 import pickle
 import imageio.v3 as iio
+import subprocess
+from src import constants
 
+remote_dir = '/gpfs/projects/uab103/uab020077/Sensorium/scripts'
+cp_folds1 = ["ssh", "uab020077@alogin1.bsc.es", f'cd "/gpfs/projects/uab103/uab020077/Sensorium/scripts" && ls']
 
-animal = 'ESPM163'
-session = '2025-08-07_01_ESPM163'
-exp_directory = '/home/melinatimplalexi/data/Repository/'
-session_dir = str(os.path.join(exp_directory, animal, session))
+try:
+    subprocess.run(cp_folds1, capture_output=True, text=True, check=True)
+    print(subprocess.run(cp_folds1, capture_output=True, text=True, check=True).stdout)
 
-
-run_path = '/home/albertestop/Sensorium/Clopath/reconstructions/results/172/2025-07-04_06_ESPM154_004'
-segments = [name for name in os.listdir(run_path)
-    if os.path.isdir(os.path.join(run_path, name))]
-segments = sorted(segments, key=int)
-segments = segments[:-1]
-
-reconstruction = []
-
-for segment in segments:
-    video = np.load(run_path + '/' + segment + '/video_array.npy')
-    reconstruction.append(video[30:-30, :, :])
-
-video = np.array(reconstruction)        # shape will be (10, 30, 4, 4)
-video = video.reshape(-1, 720, 640)
-
-video = video[:, 360:515, 330:630]
-timeline = np.arange(0, 27600) / 30
-
-np.save(run_path + '/video_timeline.npy', timeline)
-np.save(run_path + '/video_array.npy', video)
-
-iio.imwrite(
-    run_path + '/session_recons.mp4',
-    video.astype(np.uint8),
-    fps=30,
-    codec="libx264",
-    ffmpeg_params=["-pix_fmt", "yuv420p"]
-)
+except subprocess.CalledProcessError as e:
+    print("SCP failed:", e.returncode)
+    print("STDOUT:\n", e.stdout)
+    print("STDERR:\n", e.stderr)
