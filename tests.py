@@ -20,14 +20,10 @@ import imageio.v3 as iio
 import subprocess
 from src import constants
 
-remote_dir = '/gpfs/projects/uab103/uab020077/Sensorium/scripts'
-cp_folds1 = ["ssh", "uab020077@alogin1.bsc.es", f'cd "/gpfs/projects/uab103/uab020077/Sensorium/scripts" && ls']
 
-try:
-    subprocess.run(cp_folds1, capture_output=True, text=True, check=True)
-    print(subprocess.run(cp_folds1, capture_output=True, text=True, check=True).stdout)
 
-except subprocess.CalledProcessError as e:
-    print("SCP failed:", e.returncode)
-    print("STDOUT:\n", e.stdout)
-    print("STDERR:\n", e.stderr)
+directory = Path("/home/albertestop/Sensorium/Clopath/reconstructions/masks")
+npy_files = sorted(directory.rglob("*.npy"))   # use .glob("*.npy") for only top-level
+
+for f in npy_files:
+    print(str(f).split('/')[-1])

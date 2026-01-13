@@ -15,7 +15,7 @@ try:
     subprocess.run(cp_folds3, shell=True, capture_output=True, text=True, check=True)
 
     cp_datasets_csv = "scp -r /home/albertestop/data/processed_data/sensorium_all_2023/datasets.csv uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/data/processed_data/sensorium"
-    subprocess.run(cp_folds0, shell=True, capture_output=True, text=True, check=True)
+    subprocess.run(cp_datasets_csv, shell=True, capture_output=True, text=True, check=True)
 
     print("Data files in BSC updated correctly")
 
@@ -32,7 +32,7 @@ for session in constants.mice:
     if session not in datasets:
         try:
             cp_dataset = "scp -r /home/albertestop/data/processed_data/sensorium_all_2023/" + session + " uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/data/processed_data/sensorium"
-            subprocess.run(cp_folds0, shell=True, capture_output=True, text=True, check=True)
+            subprocess.run(cp_dataset, shell=True, capture_output=True, text=True, check=True)
 
         except subprocess.CalledProcessError as e:
             print("SCP failed:", e.returncode)
@@ -48,7 +48,7 @@ try:
     cp_config = "scp -r /home/albertestop/Sensorium/configs/config.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/configs"
     subprocess.run(cp_config, shell=True, capture_output=True, text=True, check=True)
     cp_constants = "scp -r /home/albertestop/Sensorium/src/constants.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/src"
-    subprocess.run(cp_config, shell=True, capture_output=True, text=True, check=True)
+    subprocess.run(cp_constants, shell=True, capture_output=True, text=True, check=True)
 
     print("Config and constants files in BSC updated correctly")
 
@@ -59,7 +59,7 @@ except subprocess.CalledProcessError as e:
 
 
 try:
-    enc_run = ["ssh", "uab020077@alogin1.bsc.es", f'cd "/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/scripts" && sbatch train.sh']
+    enc_run = ["ssh", "uab020077@alogin1.bsc.es", f'cd "/gpfs/projects/uab103/uab020077/' + BSC_subpath + '/scripts" && sbatch train.sh']
     subprocess.run(enc_run, capture_output=True, text=True, check=True)
 
     print("Train script sent to queue correctly")
