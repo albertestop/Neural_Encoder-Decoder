@@ -22,8 +22,14 @@ from src import constants
 
 
 
-directory = Path("/home/albertestop/Sensorium/Clopath/reconstructions/masks")
-npy_files = sorted(directory.rglob("*.npy"))   # use .glob("*.npy") for only top-level
+try:
+    enc_run = "ssh uab020077@alogin1.bsc.es ls"
+    subprocess.run(enc_run, shell=True, capture_output=True, text=True, check=True)
+    print(subprocess.run(enc_run, shell=True, capture_output=True, text=True, check=True).stdout)
 
-for f in npy_files:
-    print(str(f).split('/')[-1])
+    print("Train script sent to queue correctly")
+
+except subprocess.CalledProcessError as e:
+    print("SCP failed:", e.returncode)
+    print("STDOUT:\n", e.stdout)
+    print("STDERR:\n", e.stderr)

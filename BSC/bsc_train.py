@@ -1,8 +1,14 @@
 import subprocess
 import pandas as pd
-from src import constants
 
-BSC_subpath = 'Sensorium'   # Sensorium, Sensorium, Sensorium2, Sensorium3
+carry_on = input("Have you updated: \n- BSC_subpath variable in this file\n- mice variable in this file?\n- work_dir variable in bsc_constants?\n- mice in bsc_constants?\n Y/N\n")
+if carry_on != 'Y':
+    exit()
+
+BSC_subpath = 'Sensorium2'   # Sensorium, Sensorium, Sensorium2, Sensorium3
+mice = [
+    "2025-07-04_06_ESPM154_007_sleep",
+]
 
 try:
     cp_folds0 = "scp -r /home/albertestop/Sensorium/Clopath/folds_trials.json uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/Sensorium/Clopath"
@@ -25,8 +31,8 @@ except subprocess.CalledProcessError as e:
     print("STDERR:\n", e.stderr)
 
 
-for session in constants.mice:
-    df = pd.read_csv('bsc_datasets.csv', header=None)
+for session in mice:
+    df = pd.read_csv('BSC/bsc_datasets.csv', header=None)
     datasets = df[0].dropna().astype(str).tolist()
 
     if session not in datasets:
@@ -40,14 +46,14 @@ for session in constants.mice:
             print("STDERR:\n", e.stderr)
 
         df.loc[len(df)] = session
-        df.to_csv('bsc_datasets.csv', header=False, index=False)
+        df.to_csv('BSC/bsc_datasets.csv', header=False, index=False)
         print("Sessions uploaded to BSC correctly")
 
 
 try:
-    cp_config = "scp -r /home/albertestop/Sensorium/configs/config.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/configs"
+    cp_config = "scp -r /home/albertestop/Sensorium/BSC/bsc_train_config.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/configs"
     subprocess.run(cp_config, shell=True, capture_output=True, text=True, check=True)
-    cp_constants = "scp -r /home/albertestop/Sensorium/src/constants.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/src"
+    cp_constants = "scp -r /home/albertestop/Sensorium/BSC/bsc_constants.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/src"
     subprocess.run(cp_constants, shell=True, capture_output=True, text=True, check=True)
 
     print("Config and constants files in BSC updated correctly")
