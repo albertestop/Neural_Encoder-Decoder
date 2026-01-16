@@ -51,9 +51,9 @@ for session in mice:
 
 
 try:
-    cp_config = "scp -r /home/albertestop/Sensorium/BSC/bsc_train_config.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/configs"
+    cp_config = "scp -r /home/albertestop/Sensorium/BSC/bsc_train_config.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/configs/train_config.py"
     subprocess.run(cp_config, shell=True, capture_output=True, text=True, check=True)
-    cp_constants = "scp -r /home/albertestop/Sensorium/BSC/bsc_constants.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/src"
+    cp_constants = "scp -r /home/albertestop/Sensorium/BSC/bsc_constants.py uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/" + BSC_subpath + "/src/constants.py"
     subprocess.run(cp_constants, shell=True, capture_output=True, text=True, check=True)
 
     print("Config and constants files in BSC updated correctly")

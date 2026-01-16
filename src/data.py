@@ -23,7 +23,7 @@ def create_videos_phashes(mouse: str) -> np.ndarray:
 def get_folds_tiers(mouse: str, s_type: bool, num_folds: int):
     tiers = np.load(str(constants.sensorium_dir / mouse / "meta" / "trials" / "tiers.npy"))
     tiers = tiers.astype(object)  # Convert to object dtype to allow longer strings.
-    if s_type in ('sleep', 'er'):
+    if s_type in ('sleep', 'er', 'recons'):
         for i in range(len(tiers)):
             tiers[i] = 'fold_0'
     else:
