@@ -72,7 +72,7 @@ noise_flat = noise.flatten()
 fs = 30  # Example: 30 Hz (e.g., if each frame corresponds to a sample in time)
 
 # Compute the PSD using Welch's method.
-# nperseg sets the length of each segment; adjust it based on your data length.
+# nperseg sets the length of each segment; adjust it based on your data length; shorter nperseg -> no low freq information
 frequencies, psd = welch(noise_flat, fs=fs, nperseg=1024)
 
 # Plot the PSD on a semilog-y scale for better visualization.

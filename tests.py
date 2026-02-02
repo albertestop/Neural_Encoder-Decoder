@@ -22,14 +22,20 @@ from src import constants
 
 
 
-try:
-    enc_run = "ssh uab020077@alogin1.bsc.es ls"
-    subprocess.run(enc_run, shell=True, capture_output=True, text=True, check=True)
-    print(subprocess.run(enc_run, shell=True, capture_output=True, text=True, check=True).stdout)
+recons = np.load('reconstruction_array.npy')[0, 0, 0]
+video = np.load('video_array.npy')[0]
+summary = np.load('reconstruction_array.npy')[0, 0, 0]
 
-    print("Train script sent to queue correctly")
+print(recons.shape, video.shape, summary.shape)
 
-except subprocess.CalledProcessError as e:
-    print("SCP failed:", e.returncode)
-    print("STDOUT:\n", e.stdout)
-    print("STDERR:\n", e.stderr)
+plt.imshow(recons, cmap='gray')
+plt.axis('off')
+plt.savefig('recons.png')
+
+plt.imshow(video, cmap='gray')
+plt.axis('off')
+plt.savefig('video.png')
+
+plt.imshow(summary, cmap='gray')
+plt.axis('off')
+plt.savefig('summary.png')

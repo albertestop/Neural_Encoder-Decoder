@@ -97,7 +97,7 @@ save_folder = '/reconstructions/results'
 model_path = [None] * 7
 model = [None] * number_models
 
-model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_016_2/fold_0/model-017-0.261351.pth').expanduser()
+model_path[0] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_020/fold_0/model-017-0.238411.pth').expanduser()
 model_path[1] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_1/model-017-0.311331.pth').expanduser()
 model_path[2] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_2/model-017-0.285869.pth').expanduser()
 model_path[3] = Path(str(Path.home()) + '/Sensorium/data/experiments/train_test_015_3/fold_3/model-017-0.262061.pth').expanduser()

@@ -32,7 +32,7 @@ spec.loader.exec_module(proc_config)
 def reconstruct():
     import Clopath.scripts.config as dec_config
     strides_all, epoch_switch = utils.stride_calculator(dec_config.reconstruct_params)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     execution_save_path = generate_folder(str(current_dir.parent) + dec_config.save_folder)
 
     print('execution_save_path: ' + execution_save_path)
