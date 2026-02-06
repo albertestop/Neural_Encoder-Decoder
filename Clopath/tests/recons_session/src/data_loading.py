@@ -2,7 +2,7 @@ import random
 import numpy as np
 import argus
 
-import torch
+import importlib
 
 from src.inputs import get_inputs_processor
 from src.responses import get_responses_processor
@@ -21,3 +21,10 @@ def load_trial_data(model, trial_index, responses, behavior, pupil_center, devic
     responses = responses.to(device)
         
     return inputs, behavior, pupil_center, responses, population_mask
+
+
+def load_config(path):
+    spec = importlib.util.spec_from_file_location("rec_config", path)
+    config = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(config)
+    return config

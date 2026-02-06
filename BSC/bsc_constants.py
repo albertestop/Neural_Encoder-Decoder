@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 home_dir = Path("/gpfs/projects/uab103/uab020077")
-work_dir = home_dir / "Sensorium7"
+work_dir = home_dir / "Sensorium8"
 data_dir = work_dir / "data"
 sensorium_dir = home_dir / "data" / "processed_data" / "sensorium"
 
@@ -11,7 +11,7 @@ experiments_dir = data_dir / "experiments"
 predictions_dir = data_dir / "predictions"
 
 new_mice = [
-    "2025-07-11_02_ESPM154_000_recons",
+    "2025-07-04_04_ESPM154_008_recons_random_all",
 ]
 df_data = pd.read_csv(sensorium_dir / 'datasets.csv')
 new_num_neurons = df_data[df_data['mouse'].isin(new_mice)].set_index('mouse').loc[new_mice]['n_neurons'].tolist()

@@ -5,9 +5,9 @@ carry_on = input("Have you updated: \n- BSC_subpath variable in this file\n- mic
 if carry_on != 'Y':
     exit()
 
-BSC_subpath = 'Sensorium7'   # Sensorium, Sensorium, Sensorium2, Sensorium3
+BSC_subpath = 'Sensorium8'   # Sensorium, Sensorium, Sensorium2, Sensorium3
 mice = [
-    "2025-07-11_02_ESPM154_000_recons",
+    "2025-07-04_04_ESPM154_008_recons_random_all",
 ]
 
 try:
