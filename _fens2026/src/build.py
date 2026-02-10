@@ -9,7 +9,7 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent.parent.parent
 sys.path.append(str(parent_dir))
 
-from Clopath.tests.recons_session.src.reconstruct import *
+from _fens2026.src.reconstruct import *
 
 def build_recons(recons_path, mask, time_recons):
     """
@@ -45,12 +45,15 @@ def build_recons(recons_path, mask, time_recons):
     video = video.reshape(-1, 720, 640)
     video = video[:, (mask_y_min * 10) + 360:((mask_y_max + 1) * 10) + 360, (mask_x_min * 10): ((mask_x_max + 1) * 10)]
 
-    np.save(str(recons_path) + '/video_timeline.npy', time_recons)
-    np.save(str(recons_path) + '/video_array.npy', video)
+    save_path = str(recons_path) + '/analysis/whole_session_recons'
+    os.makedirs(save_path, exist_ok=True)
+
+    np.save(str(save_path) + '/video_timeline.npy', time_recons)
+    np.save(str(save_path) + '/video_array.npy', video)
 
     print(video.shape)
     iio.imwrite(
-        str(recons_path) + '/session_recons.mp4',
+        str(save_path) + '/session_recons.mp4',
         video.astype(np.uint8),
         fps=30,
         codec="libx264",
@@ -106,11 +109,11 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
         if np.abs(time_proj[idx] - t) < 0.4:
             proj_video[i, :, :] = projections[idx, :, :]
 
-
-    np.save(str(recons_path) + '/projections_array.npy', proj_video)
+    save_path = str(recons_path) + '/analysis/whole_session_recons'
+    np.save(str(save_path) + '/projections_array.npy', proj_video)
 
     iio.imwrite(
-        str(recons_path) + '/session_projections.mp4',
+        str(save_path) + '/session_projections.mp4',
         proj_video.astype(np.uint8),
         fps=30,
         codec="libx264",
