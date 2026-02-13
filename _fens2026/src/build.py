@@ -60,9 +60,6 @@ def build_recons(recons_path, mask, time_recons):
         ffmpeg_params=["-pix_fmt", "yuv420p"]
     )
 
-    return video
-
-
 def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_f):
     """
     Concatenates each trial video and its corresponding time frames

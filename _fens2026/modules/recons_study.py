@@ -1,5 +1,10 @@
 from pathlib import Path
-import os 
+import os
+import sys
+
+current_dir = Path(__file__).resolve().parent
+parent_dir = current_dir.parent.parent
+sys.path.append(str(parent_dir))
 
 from _fens2026.src.str_metrics import *
 from _fens2026.src.data_loading import *
@@ -13,8 +18,8 @@ def compute_recons_metrics(recons_run, metric_window_t):
     proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + session + "/config.py"
     proc_config = load_config(proc_config_path)
     mask = load_mask(rec_config, proc_config, session)
-    recons = np.load(str(recons_path) + '/video_timeline.npy')
-    recons_time = np.load(str(recons_path) + '/video_array.npy')
+    recons = np.load(str(recons_path) + '/analysis/whole_session_recons/video_timeline.npy')
+    recons_time = np.load(str(recons_path) + '/analysis/whole_session_recons/video_array.npy')
     window = metric_window_t * 30
 
     temporal_corr_evo = np.zeros(recons_time.shape)

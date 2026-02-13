@@ -33,7 +33,7 @@ def recons_session(r_type, recons_run):
     fr_f = fr_i + (len(segments) * 10 * 30)
     recons_time = np.arange(fr_i, fr_f) / 30
 
-    recons = build_recons(recons_path, mask, recons_time)
+    build_recons(recons_path, mask, recons_time)
 
     if r_type == 'movie':
         build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_f)

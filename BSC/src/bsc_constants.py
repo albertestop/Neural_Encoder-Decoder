@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 home_dir = Path("/gpfs/projects/uab103/uab020077")
-work_dir = home_dir / "Sensorium8"
+work_dir = home_dir / "Sensorium0"
 data_dir = work_dir / "data"
 sensorium_dir = home_dir / "data" / "processed_data" / "sensorium"
 
