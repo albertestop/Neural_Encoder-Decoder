@@ -12,8 +12,9 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 sys.path.append(str(current_dir))
+sys.path.append(str(Path.home()))
 
-from src.data import get_mouse_data, save_fold_tiers
+from src.data import get_mouse_data
 from src import constants
 import Clopath.src.utils_reconstruction as utils
 from Clopath.src.data_saving import *
@@ -23,17 +24,19 @@ from Clopath.src.predict import Predict
 from Clopath.src.reconstruct import Reconstructor
 from Clopath.reconstructions.masks.train_transparency_mask import train_mask
 
-proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + constants.mice[0] + "/config.py"
-spec = importlib.util.spec_from_file_location("proc_config", proc_config_path)
-proc_config = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(proc_config)
+from my_utils.data_loading import *
 
 
 def reconstruct():
     import Clopath.scripts.config as dec_config
+    proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + constants.mice[0] + "/config.py"
+    proc_config = load_config(proc_config_path)
     strides_all, epoch_switch = utils.stride_calculator(dec_config.reconstruct_params)
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
-    execution_save_path = generate_folder(str(current_dir.parent) + dec_config.save_folder)
+    save_path = proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions/'
+    os.makedirs(save_path, exist_ok=True)
+    execution_save_path =  generate_folder(save_path) + '/reconstruction'
+    os.makedirs(execution_save_path, exist_ok=True)
 
     print('execution_save_path: ' + execution_save_path)
     print('device: ' + str(device))
@@ -45,10 +48,10 @@ def reconstruct():
 
     video_correlations = []
 
+    if len(dec_config.animals) > 1: ValueError('Not prepared to reconstruct more than 1 animal on one run')
     for mouse_index in dec_config.animals:
 
-        mouse_save_path = execution_save_path + '/' + constants.mice[mouse_index]
-        if not os.path.isdir(mouse_save_path): os.mkdir(mouse_save_path)
+        if not os.path.isdir(execution_save_path): os.mkdir(execution_save_path)
         mouse_key = constants.mice[mouse_index]
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
@@ -89,7 +92,7 @@ def reconstruct():
             trial_index = trial_id_to_index[trial]
             trial_data = trial_data_all[trial_index]
             print(f'\nProcessing trial {trial}, index {trial_index}, mouse {mouse_key}')
-            trial_save_path = mouse_save_path + '/' + str(trial)
+            trial_save_path = execution_save_path + '/' + str(trial)
             if not os.path.isdir(trial_save_path): os.mkdir(trial_save_path)
             inputs, video, behavior, pupil_center, responses, population_mask, video_length = load_trial_data(
                 trial_data_all, model, device, trial_index, dec_config.proc_params, length=dec_config.video_length
@@ -171,11 +174,11 @@ def reconstruct():
         print(video_correlations)
 
         if proc_config.data['s_type'] not in ('sleep', 'er'):
-            with open(os.path.join(mouse_save_path, "rec_perf.txt"), "w") as file:
+            with open(os.path.join(execution_save_path, "rec_perf.txt"), "w") as file:
                 file.write('Reconstruction mean corr: ' + str(np.array(video_correlations).mean()))
 
     if proc_config.data['s_type'] in ('sleep', 'er'):
-        reconstructor.reconstruct_whole_session(mouse_save_path, proc_config)
+        reconstructor.reconstruct_whole_session(execution_save_path, proc_config)
 
     print("Reconstruction process completed for all mice and trials.")
     return np.array(video_correlations), execution_save_path

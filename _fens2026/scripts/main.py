@@ -8,10 +8,11 @@ sys.path.append(str(parent_dir))
 from _fens2026.modules.recons_study import compute_recons_metrics
 from _fens2026.modules.reconstruct_session import recons_session
 
-recons_run = 'from_BSC/0'
-metric_window_t = 3
-r_type = 'movie'
+session = '2025-07-04_04_ESPM154'
+run = '1'
+metric_window_t = 1
+r_type = 'sleep'
 reconstruct = True
 
-if reconstruct: recons_session(r_type, recons_run)
-compute_recons_metrics(recons_run, metric_window_t)
+if reconstruct: recons_session(r_type, session)
+compute_recons_metrics(session, metric_window_t)

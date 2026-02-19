@@ -19,6 +19,7 @@ def build_recons(recons_path, mask, time_recons):
 
     segments = [name for name in os.listdir(recons_path)
         if os.path.isdir(os.path.join(recons_path, name))]
+    segments = [s for s in segments if str(s).isdigit()]
     segments = sorted(segments, key=int)
     segments = segments[:-1]
 
@@ -70,7 +71,6 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
     """
 
     trials_df = pd.read_csv('/home/pmateosaparicio/data/Repository/' + proc_config.animal + '/' + proc_config.session + '/' + proc_config.session + '_all_trials.csv')
-
     trials_df = trials_df[['time', 'duration', 'F1_name']]
     trials_df['F1_name'] = trial_names(trials_df)
 

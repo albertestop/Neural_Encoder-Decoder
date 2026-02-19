@@ -17,6 +17,7 @@ def recons_session(r_type, recons_run):
 
     segments = [name for name in os.listdir(recons_path)
         if os.path.isdir(os.path.join(recons_path, name))]
+    segments = [s for s in segments if str(s).isdigit()]
     segments = sorted(segments, key=int)
     segments = segments[:-1]
 

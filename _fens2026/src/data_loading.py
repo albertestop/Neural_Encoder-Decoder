@@ -25,6 +25,20 @@ def load_config(path):
     return config
 
 
+def cut_exp_mask(mask, thr, temp_l):
+    cols_with_large_values = np.any(mask > thr, axis=0)
+    mask_x_min = np.where(cols_with_large_values)[0][0]
+    mask_x_max = np.where(cols_with_large_values)[0][-1]
+    rows_with_large_values = np.any(mask > thr, axis=1)
+    mask_y_min = np.where(rows_with_large_values)[0][0]
+    mask_y_max = np.where(rows_with_large_values)[0][-1]
+    mask = mask[mask_y_min:mask_y_max + 1, mask_x_min:mask_x_max + 1]
+    mask = np.repeat(mask[None, :, :], temp_l, axis=0)
+    mask = np.repeat(mask, 10, axis=1)
+    mask = np.repeat(mask, 10, axis=2)
+    return mask
+
+
 def load_mask(rec_config, proc_config, session):
     """
     If not movie session mask used was determined in config

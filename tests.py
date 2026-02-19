@@ -20,22 +20,12 @@ import imageio.v3 as iio
 import subprocess
 from src import constants
 
+"""name = 'temporal_ssim.npy'
 
-
-recons = np.load('reconstruction_array.npy')[0, 0, 0]
-video = np.load('video_array.npy')[0]
-summary = np.load('reconstruction_array.npy')[0, 0, 0]
-
-print(recons.shape, video.shape, summary.shape)
-
-plt.imshow(recons, cmap='gray')
-plt.axis('off')
-plt.savefig('recons.png')
-
-plt.imshow(video, cmap='gray')
-plt.axis('off')
-plt.savefig('video.png')
-
-plt.imshow(summary, cmap='gray')
-plt.axis('off')
-plt.savefig('summary.png')
+path = '/home/albertestop/Sensorium/Clopath/reconstructions/results/from_BSC/0/2025-07-04_06_ESPM154_007_sleep/analysis/metrics/' + name
+array = np.load(path)
+array = array.transpose()
+print(array.shape)
+os.makedirs('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_06_ESPM154/reconstruction/metrics', exist_ok=True)
+np.save('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_06_ESPM154/reconstruction/metrics/' + name, array)"""
+print('uf')

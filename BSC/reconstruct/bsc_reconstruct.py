@@ -14,9 +14,9 @@ carry_on = input("Have you updated: \n- BSC_subpath variable in this file\n- mic
 if carry_on != 'Y':
     exit()
 
-BSC_subpath = 'Sensorium0'   # Sensorium, Sensorium, Sensorium2, Sensorium3
+BSC_subpath = 'Sensorium40'   # Sensorium, Sensorium, Sensorium2, Sensorium3
 mice = [
-    "2025-07-04_04_ESPM154_008_recons_random_all",
+    "2025-07-04_06_ESPM154_007_sleep_random_neurons",
 ]
 process_0 = int(BSC_subpath[9:])
 n_trials = end_trial - start_trial
@@ -26,7 +26,7 @@ n_processes = int(req_runtime / 3600) + 1
 tr_i = start_trial
 tr_f = end_trial
 
-if (process_0 + n_processes + 1) > 31: 
+if (process_0 + n_processes + 1) > 47: 
     ValueError("Wait to execute, with this process we would exceed the max n of simultaneous processes in BSC (32)")
 
 carry_on = input("Have you already saved prev reconstructions? Continuing will delete previous reconstruction data\nY/N\n")
@@ -34,7 +34,7 @@ if carry_on != 'Y':
     exit()
 try:
     for i in range(32):
-        cp_folds = "rm -rf uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/Sensorium" + str(int(i)) + "/Clopath/reconstructions/results/0"
+        cp_folds = "rm -rf uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/Sensorium" + str(int(i)) + "/Clopath/reconstructions/results/1"
         subprocess.run(cp_folds, shell=True, capture_output=True, text=True, check=True)
 
     print("Previous reconstructions deleted")

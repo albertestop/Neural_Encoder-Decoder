@@ -10,7 +10,7 @@ def temporal_corr(frames: np.ndarray, mask: np.ndarray) -> np.float32:
         - (frames, x, y)
         - mask (frames, x, y)
     """
-
+    
     return np.mean([np.corrcoef(f0.ravel()[row_mask0.ravel()], f1.ravel()[row_mask1.ravel()])[0,1]
                     for f0, f1, row_mask0, row_mask1 in zip(frames[:-1], frames[1:], mask[:-1], mask[1:])])
 
@@ -19,9 +19,15 @@ def temporal_ssim(frames, mask):
                     for f0, f1, row_mask0, row_mask1 in zip(frames[:-1], frames[1:], mask[:-1], mask[1:])])
 
 def spectral_slope(frames, mask):
+    """
+    Inputs:
+        - (frames, x, y)
+        - mask (frames, x, y)
+    """
+    mask_0 = mask[0, :, :]
     slopes = []
     for frame in frames:
-        frame = frame * mask
+        frame = frame * mask_0
         F = np.fft.fftshift(np.fft.fft2(frame))
         P = np.abs(F)**2
         y, x = np.indices(P.shape)
