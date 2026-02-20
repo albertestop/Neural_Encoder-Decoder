@@ -16,6 +16,8 @@ def build_recons(recons_path, mask, time_recons):
     Concatenates a whole reconstruction from the differents segments on the reconstruction directory
     It cuts the reconstruction on the limits of the mask
     """
+    save_path = recons_path.parent / Path('whole_session_recons')
+    os.makedirs(save_path, exist_ok=True)
 
     segments = [name for name in os.listdir(recons_path)
         if os.path.isdir(os.path.join(recons_path, name))]
@@ -45,9 +47,6 @@ def build_recons(recons_path, mask, time_recons):
     video = np.array(reconstruction)        # shape will be (10, 30, 4, 4)
     video = video.reshape(-1, 720, 640)
     video = video[:, (mask_y_min * 10) + 360:((mask_y_max + 1) * 10) + 360, (mask_x_min * 10): ((mask_x_max + 1) * 10)]
-
-    save_path = str(recons_path) + '/analysis/whole_session_recons'
-    os.makedirs(save_path, exist_ok=True)
 
     np.save(str(save_path) + '/video_timeline.npy', time_recons)
     np.save(str(save_path) + '/video_array.npy', video)
@@ -106,7 +105,7 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
         if np.abs(time_proj[idx] - t) < 0.4:
             proj_video[i, :, :] = projections[idx, :, :]
 
-    save_path = str(recons_path) + '/analysis/whole_session_recons'
+    save_path = recons_path.parent / Path('whole_session_recons')
     np.save(str(save_path) + '/projections_array.npy', proj_video)
 
     iio.imwrite(

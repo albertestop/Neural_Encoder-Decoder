@@ -33,12 +33,9 @@ def reconstruct():
     proc_config = load_config(proc_config_path)
     strides_all, epoch_switch = utils.stride_calculator(dec_config.reconstruct_params)
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
-    save_path = proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions/'
+    save_path = proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions'
     os.makedirs(save_path, exist_ok=True)
-    execution_save_path =  generate_folder(save_path) + '/reconstruction'
-    os.makedirs(execution_save_path, exist_ok=True)
 
-    print('execution_save_path: ' + execution_save_path)
     print('device: ' + str(device))
     print('\nStarting Reconstructions')
 
@@ -51,8 +48,10 @@ def reconstruct():
     if len(dec_config.animals) > 1: ValueError('Not prepared to reconstruct more than 1 animal on one run')
     for mouse_index in dec_config.animals:
 
-        if not os.path.isdir(execution_save_path): os.mkdir(execution_save_path)
         mouse_key = constants.mice[mouse_index]
+        execution_save_path =  generate_folder(save_path) + '/' + constants.mice[mouse_index] + '/reconstruction'
+        print('execution_save_path: ' + execution_save_path)
+        os.makedirs(execution_save_path, exist_ok=True)
         with open(parent_dir / Path('Clopath') / dec_config.fold_file_path, 'r') as f:
             fold_data = json.load(f)
         mouse_data = get_mouse_data(mouse=mouse_key, splits=[dec_config.data_fold], s_type=proc_config.data['s_type'])

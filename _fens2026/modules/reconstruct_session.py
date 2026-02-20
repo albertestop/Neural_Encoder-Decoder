@@ -11,9 +11,10 @@ from _fens2026.src.reconstruct import *
 from _fens2026.src.build import *
 from _fens2026.src.data_loading import *
 
-def recons_session(r_type, recons_run):
-    session = read_session('/home/albertestop/Sensorium/Clopath/reconstructions/results/' + recons_run + '/')
-    recons_path = Path('/home/albertestop/Sensorium/Clopath/reconstructions/results/' + recons_run + '/' + session)
+def recons_session(r_type, session, recons_n):
+    proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + session + "/config.py"
+    proc_config = load_config(proc_config_path)
+    recons_path = Path(proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions/' + recons_n + '/' + session + '/reconstruction/')
 
     segments = [name for name in os.listdir(recons_path)
         if os.path.isdir(os.path.join(recons_path, name))]
@@ -23,8 +24,6 @@ def recons_session(r_type, recons_run):
 
     recons_config_path = str(recons_path) + '/' + segments[0] + '/config.py'
     rec_config = load_config(recons_config_path)
-    proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + session + "/config.py"
-    proc_config = load_config(proc_config_path)
 
     mask = load_mask(rec_config, proc_config, session)
 

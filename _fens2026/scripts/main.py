@@ -8,11 +8,11 @@ sys.path.append(str(parent_dir))
 from _fens2026.modules.recons_study import compute_recons_metrics
 from _fens2026.modules.reconstruct_session import recons_session
 
-session = '2025-07-04_04_ESPM154'
-run = '1'
+session = '2025-07-04_04_ESPM154_008_recons'
+reconstruction = '0'
 metric_window_t = 1
 r_type = 'sleep'
-reconstruct = True
+reconstruct = False
 
-if reconstruct: recons_session(r_type, session)
-compute_recons_metrics(session, metric_window_t)
+if reconstruct: recons_session(r_type, session, reconstruction)
+compute_recons_metrics(session, reconstruction, metric_window_t)

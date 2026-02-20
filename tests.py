@@ -20,12 +20,41 @@ import imageio.v3 as iio
 import subprocess
 from src import constants
 
-"""name = 'temporal_ssim.npy'
+def swap_recons_and_name(path_str: str) -> Path:
+    """
+    Given a path whose last folders are .../recons/name/,
+    move contents so that the new structure is .../name/recons/.
 
-path = '/home/albertestop/Sensorium/Clopath/reconstructions/results/from_BSC/0/2025-07-04_06_ESPM154_007_sleep/analysis/metrics/' + name
-array = np.load(path)
-array = array.transpose()
-print(array.shape)
-os.makedirs('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_06_ESPM154/reconstruction/metrics', exist_ok=True)
-np.save('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_06_ESPM154/reconstruction/metrics/' + name, array)"""
-print('uf')
+    Returns the new base path (.../name/recons/).
+    """
+    path = Path(path_str).resolve()
+
+    # Expect something like .../recons/name[/optional_subpath]
+    name_dir = path
+    recons_dir = name_dir.parent
+    parent = recons_dir.parent
+
+    # New structure: .../name/recons[/optional_subpath]
+    new_base = parent / name_dir.name / recons_dir.name
+
+    # If the input path points inside `name`, preserve the subpath
+    subpath = path.relative_to(name_dir)
+    new_path = new_base / subpath
+
+    # Create new_base if needed
+    new_base.mkdir(parents=True, exist_ok=True)
+    print(new_base)
+
+    # Move all entries from old name_dir to new_base
+    for item in name_dir.iterdir():
+        target = new_base / item.name
+        shutil.move(str(item), str(target))
+
+    # Optionally remove the now-empty old `name` and `recons` dirs if desired:
+    name_dir.rmdir()
+    recons_dir.rmdir()
+
+    return new_path
+
+old = "/home/pmateosaparicio/data/Repository/ESPM127/2025-04-01_02_ESPM127/reconstructions/0/reconstruction/2025-04-01_02_ESPM127_013_sleep"
+new = swap_recons_and_name(old)
