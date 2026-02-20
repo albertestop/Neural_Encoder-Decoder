@@ -12,8 +12,11 @@ from BSC.reconstruct.src import *
 from my_utils.data_loading import *
 from my_utils.dir_management import *
 
-process_0 = 24
+process_0 = 40
 n_processes = 8
+
+run_code = input('After transfer data will be deleted from BSC, ensure process_0 and n_processes correspond to the ones you whish to import. If there are trials from different sessions with overlapping names they will be lost. Do you want to continue? Y/N')
+if run_code != 'Y': exit()
 
 save_path = "/home/albertestop/Sensorium/BSC/BSC_to_dream/temp"
 for item in os.listdir(save_path):
@@ -55,7 +58,7 @@ for i in range(n_processes):
         proc_config = load_config(proc_config_path)
         target_dir = proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions'
         os.makedirs(target_dir, exist_ok=True)
-        target_dir =  next_num_folder(target_dir) + session + '/reconstruction/'
+        target_dir =  next_num_folder(target_dir) + '/' + session + '/reconstruction/'
         os.makedirs(target_dir, exist_ok=True)
     
     print('Saving process outputs to ' + target_dir)
