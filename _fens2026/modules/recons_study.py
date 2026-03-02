@@ -11,6 +11,23 @@ from _fens2026.src.str_metrics import *
 from _fens2026.src.data_loading import *
 
 
+def fill_edge_zeros_with_mean(arr):
+    if arr.size == 0:
+        return arr
+
+    nonzero_idx = np.flatnonzero(arr != 0)
+    if nonzero_idx.size == 0:
+        return arr
+
+    mean_val = np.mean(arr)
+    first_nz = nonzero_idx[0]
+    last_nz = nonzero_idx[-1]
+
+    arr[:first_nz] = mean_val
+    arr[last_nz + 1:] = mean_val
+    return arr
+
+
 def compute_recons_metrics(session, recons_n, metric_window_t):
     window = metric_window_t * 30
     proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + session + "/config.py"
@@ -39,6 +56,11 @@ def compute_recons_metrics(session, recons_n, metric_window_t):
         temporal_ssim_evo[i + int(window / 2)] = temporal_ssim(window_recons, mask)
         spectral_slope_evo[i + int(window / 2)] = spectral_slope(window_recons, mask)
         compression_gain_evo[i + int(window / 2)] = compression_gain(window_recons, mask)
+
+    temporal_corr_evo = fill_edge_zeros_with_mean(temporal_corr_evo)
+    temporal_ssim_evo = fill_edge_zeros_with_mean(temporal_ssim_evo)
+    spectral_slope_evo = fill_edge_zeros_with_mean(spectral_slope_evo)
+    compression_gain_evo = fill_edge_zeros_with_mean(compression_gain_evo)
 
     temporal_corr_evo = np.transpose(np.vstack((recons_time, temporal_corr_evo)))
     temporal_ssim_evo = np.transpose(np.vstack((recons_time, temporal_ssim_evo)))

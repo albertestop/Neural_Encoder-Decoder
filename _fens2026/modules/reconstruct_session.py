@@ -11,7 +11,13 @@ from _fens2026.src.reconstruct import *
 from _fens2026.src.build import *
 from _fens2026.src.data_loading import *
 
-def recons_session(r_type, session, recons_n):
+
+def recons_session(
+    session,
+    recons_n,
+    reconstruct_session=True,
+    recons_projections=False,
+):
     proc_config_path = "/home/albertestop/data/processed_data/sensorium_all_2023/" + session + "/config.py"
     proc_config = load_config(proc_config_path)
     recons_path = Path(proc_config.exp_directory + proc_config.animal + '/' + proc_config.session + '/reconstructions/' + recons_n + '/' + session + '/reconstruction/')
@@ -33,13 +39,21 @@ def recons_session(r_type, session, recons_n):
     fr_f = fr_i + (len(segments) * 10 * 30)
     recons_time = np.arange(fr_i, fr_f) / 30
 
-    build_recons(recons_path, mask, recons_time)
+    if reconstruct_session:
+        build_recons(recons_path, mask, recons_time)
 
-    if r_type == 'movie':
+    if recons_projections:
         build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_f)
 
 
 if __name__ == '__main__':
     r_type = 'movie'
+    session = '2025-07-04_04_ESPM154_008_recons'
     recons_run = '173'
-    recons_session(r_type, recons_run)
+    recons_session(
+        r_type,
+        session,
+        recons_run,
+        reconstruct_session=True,
+        recons_projections=False,
+    )

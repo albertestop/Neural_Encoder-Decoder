@@ -11,6 +11,27 @@ sys.path.append(str(parent_dir))
 
 from _fens2026.src.reconstruct import *
 
+
+def mask_contour_coords(mask_binary):
+    """
+    Return contour coordinates as an array of shape [point, coord] with [x, y].
+    """
+    mask_binary = mask_binary.astype(bool)
+    if not np.any(mask_binary):
+        return np.empty((0, 2), dtype=int)
+
+    padded = np.pad(mask_binary, ((1, 1), (1, 1)), mode="constant", constant_values=False)
+    center = padded[1:-1, 1:-1]
+    up = padded[:-2, 1:-1]
+    down = padded[2:, 1:-1]
+    left = padded[1:-1, :-2]
+    right = padded[1:-1, 2:]
+
+    edge = center & ~(up & down & left & right)
+    yx = np.argwhere(edge)
+    return np.column_stack((yx[:, 1], yx[:, 0])).astype(int)
+
+
 def build_recons(recons_path, mask, time_recons):
     """
     Concatenates a whole reconstruction from the differents segments on the reconstruction directory
@@ -90,6 +111,7 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
         time_proj = np.concatenate((time_proj, np.linspace(float(t_start), float(t_start) + 30, 900)))
 
     projections = np.transpose(projections, (2, 0, 1))
+    mask_binary = mask > rec_config.mask_eval_th
     mask[mask > rec_config.mask_eval_th] = 1.1
     mask[mask < rec_config.mask_eval_th] = 0.4
     projections = projections * mask
@@ -106,6 +128,12 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
             proj_video[i, :, :] = projections[idx, :, :]
 
     save_path = recons_path.parent / Path('whole_session_recons')
+    contour_coords = mask_contour_coords(mask_binary)
+    # Scale to video coordinates after repeat(10, 10) so contour aligns with session_projections.mp4.
+    contour_coords = contour_coords * 10
+    np.save(str(save_path) + '/mask_contour_coords.npy', contour_coords)
+    np.save(str(save_path) + '/session_projections.npy', proj_video)
+    # Backward compatibility with existing consumers.
     np.save(str(save_path) + '/projections_array.npy', proj_video)
 
     iio.imwrite(
@@ -115,4 +143,3 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
         codec="libx264",
         ffmpeg_params=["-pix_fmt", "yuv420p"]
     )
-
