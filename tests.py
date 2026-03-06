@@ -20,7 +20,11 @@ import imageio.v3 as iio
 import subprocess
 from src import constants
 
-array = np.load('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_04_ESPM154/reconstructions/0/2025-07-04_04_ESPM154_008_recons/whole_session_recons/mask_contour_coords.npy')
-array = np.transpose(array)
-print(array.shape)
-np.save('/home/pmateosaparicio/data/Repository/ESPM154/2025-07-04_04_ESPM154/reconstructions/0/2025-07-04_04_ESPM154_008_recons/whole_session_recons/mask_contour_coords.npy', array)
+data = np.load('/home/albertestop/data/processed_data/sensorium_all_2023/2025-04-01_01_ESPM127_014_recons/data/responses/4.npy')
+plt.clf()
+plt.imshow(data, aspect='auto', vmin=0, vmax=data[data != 0].mean())
+plt.colorbar(label='Response Intensity')
+plt.xlabel('Frame')
+plt.ylabel('Neuron')
+plt.title('Lab response')
+plt.savefig('delete.png')

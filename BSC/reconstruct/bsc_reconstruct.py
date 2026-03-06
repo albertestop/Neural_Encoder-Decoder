@@ -14,9 +14,9 @@ carry_on = input("Have you updated: \n- BSC_subpath variable in this file\n- mic
 if carry_on != 'Y':
     exit()
 
-BSC_subpath = 'Sensorium54'   # Sensorium, Sensorium, Sensorium2, Sensorium3
+BSC_subpath = 'Sensorium63'   # Sensorium, Sensorium, Sensorium2, Sensorium3
 mice = [
-    "2025-04-01_02_ESPM127_013_sleep_random_neurons",
+    "2025-07-07_06_ESPM154_003_sleep_random_neurons",
 ]
 process_0 = int(BSC_subpath[9:])
 n_trials = end_trial - start_trial

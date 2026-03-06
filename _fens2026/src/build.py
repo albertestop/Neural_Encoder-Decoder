@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import numpy as np
 import imageio.v3 as iio
+import cv2
 import importlib
 import pandas as pd
 current_dir = Path(__file__).resolve().parent
@@ -20,16 +21,13 @@ def mask_contour_coords(mask_binary):
     if not np.any(mask_binary):
         return np.empty((0, 2), dtype=int)
 
-    padded = np.pad(mask_binary, ((1, 1), (1, 1)), mode="constant", constant_values=False)
-    center = padded[1:-1, 1:-1]
-    up = padded[:-2, 1:-1]
-    down = padded[2:, 1:-1]
-    left = padded[1:-1, :-2]
-    right = padded[1:-1, 2:]
+    mask_u8 = mask_binary.astype(np.uint8)
+    contours, _ = cv2.findContours(mask_u8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if not contours:
+        return np.empty((0, 2), dtype=int)
 
-    edge = center & ~(up & down & left & right)
-    yx = np.argwhere(edge)
-    return np.column_stack((yx[:, 1], yx[:, 0])).astype(int)
+    largest = max(contours, key=cv2.contourArea)
+    return largest[:, 0, :].astype(int)
 
 
 def build_recons(recons_path, mask, time_recons):
@@ -112,9 +110,9 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
 
     projections = np.transpose(projections, (2, 0, 1))
     mask_binary = mask > rec_config.mask_eval_th
-    mask[mask > rec_config.mask_eval_th] = 1.1
-    mask[mask < rec_config.mask_eval_th] = 0.4
-    projections = projections * mask
+    # Use the same thresholded mask for both visualization and contour extraction.
+    mask_display = np.where(mask_binary, 1.1, 0.4)
+    projections = projections * mask_display
     projections = np.clip(projections, 0, 255)
 
     projections = projections.repeat(10, axis=1).repeat(10, axis=2)
@@ -128,9 +126,8 @@ def build_movie(proc_config, rec_config, mask, recons_time, recons_path, t_0, t_
             proj_video[i, :, :] = projections[idx, :, :]
 
     save_path = recons_path.parent / Path('whole_session_recons')
-    contour_coords = mask_contour_coords(mask_binary)
-    # Scale to video coordinates after repeat(10, 10) so contour aligns with session_projections.mp4.
-    contour_coords = contour_coords * 10
+    mask_binary_video = mask_binary.repeat(10, axis=0).repeat(10, axis=1)
+    contour_coords = mask_contour_coords(mask_binary_video)
     np.save(str(save_path) + '/mask_contour_coords.npy', contour_coords)
     np.save(str(save_path) + '/session_projections.npy', proj_video)
     # Backward compatibility with existing consumers.
