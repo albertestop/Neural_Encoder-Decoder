@@ -2,6 +2,8 @@ import numpy as np
 from scipy.stats import linregress
 from skimage.metrics import structural_similarity as ssim
 import gzip
+import subprocess
+import imageio_ffmpeg
 
 def temporal_corr(frames: np.ndarray, mask: np.ndarray) -> np.float32:
     """
@@ -43,6 +45,51 @@ def compression_gain(video, mask):
     video = video.ravel()[mask.ravel()]
     pre_weight = video.nbytes
     post_weight = len(gzip.compress(video))
+    return pre_weight/ post_weight
+
+def video_comp_gain(video, mask, fps=30, crf=28, preset="slow"):
+    video = video * mask
+    T, H, W = video.shape
+    video = np.where(mask, video, 0)
+
+    if video.dtype == np.bool_ or video.max() <= 1:
+        video_trans = (video * 255).astype(np.uint8)
+    else:
+        video_trans = video.astype(np.uint8)
+
+    cmd = [
+        imageio_ffmpeg.get_ffmpeg_exe(),
+        "-hide_banner",   # removes ffmpeg version + config text
+        "-loglevel", "error",
+        "-nostats",       # stops progress bar / frame updates
+
+        "-y",
+
+        "-f", "rawvideo",
+        "-pix_fmt", "gray",
+        "-s", f"{W}x{H}",
+        "-r", str(fps),
+        "-i", "-",
+
+        "-c:v", "libx265",
+        "-preset", preset,
+        "-crf", str(crf),
+        "-tag:v", "hvc1",
+
+        "-movflags", "frag_keyframe+empty_moov",
+        "-f", "mp4",
+        "pipe:1"
+    ]
+
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    compressed_video, _ = p.communicate(video_trans.tobytes())
+
+    if p.returncode != 0:
+        raise RuntimeError("FFmpeg encoding failed")
+    
+    pre_weight = video.nbytes
+    post_weight = len(compressed_video)
+
     return pre_weight/ post_weight
 
 
@@ -113,5 +160,3 @@ if __name__ == '__main__':
     print(f'Temporal ssim: {temporal_ssim(video, mask)}')
     print(f'Spectral slope: {spectral_slope(video, mask[0])}')
     print(f'Compression rate: {compression_gain(video, mask)}')
-
-

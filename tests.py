@@ -19,12 +19,16 @@ import pickle
 import imageio.v3 as iio
 import subprocess
 from src import constants
+from PIL import Image
 
-data = np.load('/home/albertestop/data/processed_data/sensorium_all_2023/2025-04-01_01_ESPM127_014_recons/data/responses/4.npy')
-plt.clf()
-plt.imshow(data, aspect='auto', vmin=0, vmax=data[data != 0].mean())
-plt.colorbar(label='Response Intensity')
-plt.xlabel('Frame')
-plt.ylabel('Neuron')
-plt.title('Lab response')
-plt.savefig('delete.png')
+import subprocess
+import pandas as pd
+
+try:
+    cp_folds0 = "scp -r /home/albertestop/visual_cortex_study/transformer_arch uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/transformer_arch/transformer_arch_0"
+    subprocess.run(cp_folds0, shell=True, capture_output=True, text=True, check=True)
+except subprocess.CalledProcessError as e:
+    print("SCP failed:", e.returncode)
+    print("STDOUT:\n", e.stdout)
+    print("STDERR:\n", e.stderr)
+

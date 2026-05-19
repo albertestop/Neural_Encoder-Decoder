@@ -9,19 +9,21 @@ from _fens2026.modules.recons_study import compute_recons_metrics
 from _fens2026.modules.reconstruct_session import recons_session
 
 sessions = [
-    '2025-04-01_02_ESPM127_013_sleep',
-    '2025-04-01_01_ESPM127_014_recons_random_all',
-    '2025-04-01_01_ESPM127_014_recons_random_time',
-    '2025-04-01_01_ESPM127_014_recons_random_neurons',
-    '2025-04-01_02_ESPM127_013_sleep_random_all',
-    '2025-04-01_02_ESPM127_013_sleep_random_time',
-    '2025-04-01_02_ESPM127_013_sleep_random_neurons'
+    '2025-07-04_06_ESPM154_007_sleep',
+    '2025-07-04_06_ESPM154_007_sleep_random_neurons',
+    '2025-07-04_06_ESPM154_007_sleep_random_time',
+    '2025-07-04_06_ESPM154_007_sleep_random_all',
+    #'2025-07-04_04_ESPM154_008_recons',
+    '2025-07-04_04_ESPM154_008_recons_random_all',
+    '2025-07-04_04_ESPM154_008_recons_random_time',
+    '2025-07-04_04_ESPM154_008_recons_random_neurons'
     ]
 reconstructions = [
     '0',
     '1',
     '2',
     '3',
+    #'0',
     '1',
     '2',
     '3'

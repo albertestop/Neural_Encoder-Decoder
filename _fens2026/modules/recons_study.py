@@ -47,6 +47,7 @@ def compute_recons_metrics(session, recons_n, metric_window_t):
     temporal_ssim_evo = np.zeros(recons_time.shape)
     spectral_slope_evo = np.zeros(recons_time.shape)
     compression_gain_evo = np.zeros(recons_time.shape)
+    video_comp_gain_evo = np.zeros(recons_time.shape)
 
     print("Computing metrics")
     for i in range(len(recons_time) - window):
@@ -56,16 +57,19 @@ def compute_recons_metrics(session, recons_n, metric_window_t):
         temporal_ssim_evo[i + int(window / 2)] = temporal_ssim(window_recons, mask)
         spectral_slope_evo[i + int(window / 2)] = spectral_slope(window_recons, mask)
         compression_gain_evo[i + int(window / 2)] = compression_gain(window_recons, mask)
+        video_comp_gain_evo[i + int(window / 2)] = video_comp_gain(window_recons, mask)
 
     temporal_corr_evo = fill_edge_zeros_with_mean(temporal_corr_evo)
     temporal_ssim_evo = fill_edge_zeros_with_mean(temporal_ssim_evo)
     spectral_slope_evo = fill_edge_zeros_with_mean(spectral_slope_evo)
     compression_gain_evo = fill_edge_zeros_with_mean(compression_gain_evo)
+    video_comp_gain_evo = fill_edge_zeros_with_mean(video_comp_gain_evo)
 
     temporal_corr_evo = np.transpose(np.vstack((recons_time, temporal_corr_evo)))
     temporal_ssim_evo = np.transpose(np.vstack((recons_time, temporal_ssim_evo)))
     spectral_slope_evo = np.transpose(np.vstack((recons_time, spectral_slope_evo)))
     compression_gain_evo = np.transpose(np.vstack((recons_time, compression_gain_evo)))
+    video_comp_gain_evo = np.transpose(np.vstack((recons_time, video_comp_gain_evo)))
 
     save_path = recons_path.parent / Path('metrics')
     os.makedirs(save_path, exist_ok=True)
@@ -73,6 +77,7 @@ def compute_recons_metrics(session, recons_n, metric_window_t):
     np.save(str(save_path) + '/temporal_ssim.npy', temporal_ssim_evo)
     np.save(str(save_path) + '/spectral_slope.npy', spectral_slope_evo)
     np.save(str(save_path) + '/compression_gain.npy', compression_gain_evo)
+    np.save(str(save_path) + '/video_comp_gain_evo.npy', video_comp_gain_evo)
 
 
 
