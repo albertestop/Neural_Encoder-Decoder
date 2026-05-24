@@ -12,7 +12,7 @@ from BSC.reconstruct.src import *
 from my_utils.data_loading import *
 from my_utils.dir_management import *
 
-process_0 = 27
+process_0 = 63
 n_processes = 9
 
 run_code = input('After transfer data will be deleted from BSC, ensure process_0 and n_processes correspond to the ones you whish to import. If there are trials from different sessions with overlapping names they will be lost. Do you want to continue? Y/N')

@@ -25,7 +25,7 @@ start_trial = 0
 end_trial = 480
 random_trials = False  # Si es True, se eligen trials aleatorios; por defecto es False
 video_length = None  # Máximo es 300, pero puede ser demasiado para algunas GPUs
-pretrained_mask = 'mask_2025-07-07_05_ESPM154_002.npy'  # not used for movie sessions
+pretrained_mask = 'mask_2025-07-11_02_ESPM154_000.npy'  # not used for movie sessions
 check_data_fold = False
 if check_data_fold: 
     if fold_number not in model_list: raise ValueError("This sensorium model was trained using this fold.")
@@ -97,13 +97,13 @@ save_folder = '/reconstructions/results'
 model_path = [None] * 7
 model = [None] * number_models
 
-model_path[0] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_0/model-017-0.268404.pth').expanduser()
-model_path[1] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_1/model-017-0.266992.pth').expanduser()
-model_path[2] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_2/model-017-0.263906.pth').expanduser()
-model_path[3] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_3/model-017-0.277670.pth').expanduser()
-model_path[4] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_4/model-017-0.258268.pth').expanduser()
-model_path[5] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_5/model-017-0.274852.pth').expanduser()
-model_path[6] = Path('/gpfs/projects/uab103/uab020077/Sensorium2/data/experiments/train_test_016_3/fold_6/model-017-0.270529.pth').expanduser()
+model_path[0] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_0/model-017-0.237752.pth').expanduser()
+model_path[1] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_1/model-017-0.267054.pth').expanduser()
+model_path[2] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_2/model-017-0.233515.pth').expanduser()
+model_path[3] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_3/model-017-0.247833.pth').expanduser()
+model_path[4] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_4/model-017-0.244592.pth').expanduser()
+model_path[5] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_5/model-017-0.243622.pth').expanduser()
+model_path[6] = Path('/gpfs/projects/uab103/uab020077/Sensorium0/data/experiments/train_test_020_1/fold_6/model-017-0.234561.pth').expanduser()
 
 model_name = [None] * 7
 for i in range(len(model_path)):

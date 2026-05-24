@@ -29,9 +29,10 @@ reconstructions = [
     '3'
     ]
 metric_window_t = 1
-build_session_recons = True
+build_session_recons = False
 build_session_projections = False
-compute_metrics = True
+compute_metrics = False
+compute_new_metrics = True
 
 for session, reconstruction in zip(sessions, reconstructions):
     print(session)
@@ -45,3 +46,6 @@ for session, reconstruction in zip(sessions, reconstructions):
 
     if compute_metrics:
         compute_recons_metrics(session, reconstruction, metric_window_t)
+
+    if compute_new_metrics:
+        compute_new_recons_metrics(session, reconstruction, metric_window_t)
