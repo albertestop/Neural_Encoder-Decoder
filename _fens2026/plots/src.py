@@ -102,61 +102,75 @@ def load_config(path):
     return config
 
 
-def segment_movie_session(categories_t, timeline, temporal_corr_evo, temporal_ssim_evo, spectral_slope_evo, compression_gain_evo):
-    tot_temporal_corr_evo = []
-    tot_temporal_ssim_evo = []
-    tot_spectral_slope_evo = []
-    tot_compression_gain_evo = []
+def segment_movie_session(categories_t, timeline, metrics_raw):
+    """
+        Returns a list organised as total_metrics[category][metric]
+    """
+    total_metrics = []
+    total_metrics_t = []
     for category in categories_t:
-        cat_temporal_corr_evo = np.empty(0)
-        cat_temporal_ssim_evo = np.empty(0)
-        cat_spectral_slope_evo = np.empty(0)
-        cat_compression_gain_evo = np.empty(0)
+        cat_metrics = []
+        cat_metrics_t = np.empty(0)
+        for i in range(len(metrics_raw)):
+            cat_metrics.append(np.empty(0))
+
         for t_i, t_f in category:
             mask = (timeline >= t_i) & (timeline <= t_f)
-            cat_temporal_corr_evo = np.concatenate((cat_temporal_corr_evo,(temporal_corr_evo[mask, 1])))
-            cat_temporal_ssim_evo = np.concatenate((cat_temporal_ssim_evo,(temporal_ssim_evo[mask, 1])))
-            cat_spectral_slope_evo = np.concatenate((cat_spectral_slope_evo,(spectral_slope_evo[mask, 1])))
-            cat_compression_gain_evo = np.concatenate((cat_compression_gain_evo,(compression_gain_evo[mask, 1])))
+            cat_metrics_t = np.concatenate((cat_metrics_t, timeline[mask]))
+            for i in range(len(metrics_raw)):
+                cat_metrics[i] = np.concatenate((cat_metrics[i], metrics_raw[i][mask, 1]))
+                
 
-        tot_temporal_corr_evo.append(cat_temporal_corr_evo)
-        tot_temporal_ssim_evo.append(cat_temporal_ssim_evo)
-        tot_spectral_slope_evo.append(cat_spectral_slope_evo)
-        tot_compression_gain_evo.append(cat_compression_gain_evo)
+        total_metrics.append(cat_metrics)
+        total_metrics_t.append(cat_metrics_t)
 
-    return tot_temporal_corr_evo, tot_temporal_ssim_evo, tot_spectral_slope_evo, tot_compression_gain_evo
+    return total_metrics, total_metrics_t
 
 
-def segment_sleep_session(categories_t, timeline, temporal_corr_evo, temporal_ssim_evo, spectral_slope_evo, compression_gain_evo):
-    tot_temporal_corr_evo = []
-    tot_temporal_ssim_evo = []
-    tot_spectral_slope_evo = []
-    tot_compression_gain_evo = []
+def segment_sleep_session(categories_t, timeline, metrics_raw):
+    """
+        Returns a list organised as total_metrics[category][metric]
+    """
+    total_metrics = []
+    total_metrics_t = []
     for category_t in categories_t:
+        cat_metrics = []
+        cat_metrics_t = np.empty(0)
         threshold = 0.1
         # Keep values in b that are within 0.1 of any value in a
         mask = np.any(np.abs(timeline[:, None] - category_t) < threshold, axis=1)
-        tot_temporal_corr_evo.append(temporal_corr_evo[mask, 1])
-        tot_temporal_ssim_evo.append(temporal_ssim_evo[mask, 1])
-        tot_spectral_slope_evo.append(spectral_slope_evo[mask, 1])
-        tot_compression_gain_evo.append(compression_gain_evo[mask, 1])
+        cat_metrics_t = np.concatenate((cat_metrics_t, timeline[mask]))
+        for i in range(len(metrics_raw)):
+            cat_metrics.append(metrics_raw[i][mask, 1])
+            
+        total_metrics.append(cat_metrics)
+        total_metrics_t.append(cat_metrics_t)
 
-    return tot_temporal_corr_evo, tot_temporal_ssim_evo, tot_spectral_slope_evo, tot_compression_gain_evo
+    return total_metrics, total_metrics_t
 
 def plot_violin(data, categories, title, save_path):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(12, 6))  # bigger figure
+
     vp = ax.violinplot(data, showmeans=True, showextrema=False)
+
     for body in vp['bodies']:
         body.set_facecolor('#4C78A8')
         body.set_edgecolor('black')
         body.set_alpha(0.6)
 
     ax.set_xticks(np.arange(1, len(categories) + 1))
-    ax.set_xticklabels(categories)
+    ax.set_xticklabels(categories, rotation=30, ha='right')  # rotate + align
+
     ax.set_title(title)
-    plt.tight_layout()
-    plt.xticks(rotation=30)
-    plt.savefig(save_path / Path(f"{title}.png"), dpi=150)
+
+    fig.tight_layout()
+
+    plt.savefig(
+        save_path / Path(f"{title}.png"),
+        dpi=300,               # higher resolution
+        bbox_inches='tight'    # prevents labels from being cut off
+    )
+
     print(save_path / Path(f"{title}.png"))
     plt.close(fig)
 
@@ -446,3 +460,18 @@ def gen_dim_reduction_3d_plot_min_var(df, save_path, title="lda_3d"):
     print(save_path / Path(f"{title}.png"))
     plt.show()
     plt.close(fig)
+
+
+def gen_whole_session_plots(save_path, metrics_used, session_type, categories, timeline, categories_t, metrics_raw):
+    
+    for metric_name, metric in zip(metrics_used, metrics_raw):
+        fig, ax = plt.subplots(figsize=(150, 6))  # bigger figure
+        for i, category_t in enumerate(categories_t):
+            color=f'C{i + 1}'
+            for j, t in enumerate(category_t[::10]):
+                if j == 0: plt.axvline(x=t, color=color, alpha=0.7, label=categories[i])
+                else: plt.axvline(x=t, color=color, alpha=0.7)
+        ax.plot(timeline, metric[:, 1], color='C0')
+        ax.legend(loc='upper left')
+        plt.savefig(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))
+        print(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))

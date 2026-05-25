@@ -6,32 +6,21 @@ parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 
 from _fens2026.modules.recons_study import compute_recons_metrics
+from _fens2026.modules.recons_study import compute_new_recons_metrics
 from _fens2026.modules.reconstruct_session import recons_session
 
 sessions = [
-    '2025-07-04_06_ESPM154_007_sleep',
-    '2025-07-04_06_ESPM154_007_sleep_random_neurons',
-    '2025-07-04_06_ESPM154_007_sleep_random_time',
-    '2025-07-04_06_ESPM154_007_sleep_random_all',
-    #'2025-07-04_04_ESPM154_008_recons',
-    '2025-07-04_04_ESPM154_008_recons_random_all',
-    '2025-07-04_04_ESPM154_008_recons_random_time',
-    '2025-07-04_04_ESPM154_008_recons_random_neurons'
+    '2025-07-11_02_ESPM154_000_recons',
+    '2025-07-11_03_ESPM154_000_sleep'
     ]
 reconstructions = [
-    '0',
     '1',
-    '2',
-    '3',
-    #'0',
-    '1',
-    '2',
-    '3'
+    '1'
     ]
 metric_window_t = 1
-build_session_recons = False
-build_session_projections = False
-compute_metrics = False
+build_session_recons = True
+build_session_projections = True
+compute_metrics = True
 compute_new_metrics = True
 
 for session, reconstruction in zip(sessions, reconstructions):

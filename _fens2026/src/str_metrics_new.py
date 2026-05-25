@@ -79,7 +79,7 @@ def temporal_autocorrelation(frames, mask, lag=1):
 # 3. Spatial spectral slope
 # ============================================================
 
-def spectral_slope(frames, mask):
+def spectral_slope_new(frames, mask):
     """
     Estimate average power spectrum slope.
 

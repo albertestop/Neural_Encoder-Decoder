@@ -24,12 +24,13 @@ from _fens2026.plots.src import *
 
 """
 
-sessions = ['2025-07-04_04_ESPM154_008_recons', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_04_ESPM154_008_recons_random_all', '2025-07-04_04_ESPM154_008_recons_random_time', '2025-07-04_04_ESPM154_008_recons_random_neurons']#, '2025-07-04_04_ESPM154_008_recons_random_all', '2025-07-04_04_ESPM154_008_recons_random_time', '2025-07-04_04_ESPM154_008_recons_random_neurons']
+sessions = ['2025-07-04_04_ESPM154_008_recons', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_06_ESPM154_007_sleep_random_neurons', '2025-07-04_06_ESPM154_007_sleep_random_time', '2025-07-04_06_ESPM154_007_sleep_random_all']#, '2025-07-04_04_ESPM154_008_recons_random_all', '2025-07-04_04_ESPM154_008_recons_random_time', '2025-07-04_04_ESPM154_008_recons_random_neurons']
 train_session = '2025-07-04_04_ESPM154_008'
-runs = ['0', '0', '1', '2', '3']#, '1', '2', '3']
-session_types = ['movie', 'pupil', 'random', 'random', 'random']#, 'random', 'random', 'random']
+runs = ['0', '0', '0', '1', '2', '3']#, '1', '2', '3']
+session_types = ['movie', 'sleep', 'pupil', 'random', 'random', 'random']#, 'random', 'random', 'random']
+metrics_used = ["Temp_Corr", "Temp_SSIM", "Spectral_Slope", "Comp_Gain", "Temp_Corr_New", "Temp_Autocorr", "Spectral_Slopoe_New", "Entropy", "Comp_Gain_New", "PCA_Energy", "Frame_Predictab", "Temp_Diff_Energy"]
 
-df = pd.DataFrame(columns=["Temp_Corr", "Temp_SSIM", "Spectral_Slope", "Comp_Gain", "Category"])
+df = pd.DataFrame(columns=metrics_used + ["Category"])
 
 for session, run, session_type in zip(sessions, runs, session_types):
     print(f'Preparing session {session}, type = {session_type}')
@@ -42,12 +43,21 @@ for session, run, session_type in zip(sessions, runs, session_types):
     session_random = proc_config.data['randomize']
     session_random_type = 'random_' + proc_config.data['rand_type']
 
-    temporal_corr_evo = np.load(str(recons_metric_path) + '/temporal_corr.npy')
-    temporal_ssim_evo = np.load(str(recons_metric_path) + '/temporal_ssim.npy')
-    spectral_slope_evo = np.load(str(recons_metric_path) + '/spectral_slope.npy')
-    compression_gain_evo = np.load(str(recons_metric_path) + '/compression_gain.npy')
+    metrics_raw = []
+    metrics_raw.append(np.load(str(recons_metric_path) + '/temporal_corr.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/temporal_ssim.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/spectral_slope.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/compression_gain.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/temporal_corr_new.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/temporal_autocorr.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/spectral_slope_new.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/entropy.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/compression_gain_new.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/pca_energy.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/frame_predictab.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/temp_diff_energy.npy'))
 
-    timeline = temporal_corr_evo[:, 0]
+    timeline = metrics_raw[0][:, 0]
 
     if session_type == 'movie':
         trials_df = pd.read_csv(os.path.join(proc_config.data['session_dir'], proc_config.data['session'] + '_all_trials.csv'))
@@ -62,52 +72,65 @@ for session, run, session_type in zip(sessions, runs, session_types):
 
         categories = ['seen', 'inter', 'not_seen']
         categories_t = get_movie_categories_t(trials_df, skipped_indexes)
-        tot_temporal_corr_evo, tot_temporal_ssim_evo, tot_spectral_slope_evo, tot_compression_gain_evo = segment_movie_session(
+        total_metrics, total_metrics_t = segment_movie_session(
             categories_t, timeline, 
-            temporal_corr_evo, temporal_ssim_evo, 
-            spectral_slope_evo, compression_gain_evo)
+            metrics_raw)
         rows = []
         for i in range(len(categories)):
-            new_col = np.full((len(tot_temporal_corr_evo[i]), 1), categories[i])
-            metrics = np.column_stack((tot_temporal_corr_evo[i], tot_temporal_ssim_evo[i], tot_spectral_slope_evo[i], tot_compression_gain_evo[i], new_col))
-            rows.append(pd.DataFrame(metrics, columns=df.columns))
+            new_col = np.full((len(total_metrics[i][0]), 1), categories[i])
+            metrics = np.empty(total_metrics[i][0].shape)
+            for cat_metric in total_metrics[i]:
+                metrics = np.column_stack((metrics, cat_metric))
+            metrics = np.column_stack((metrics, new_col))
+            rows.append(pd.DataFrame(metrics[:, 1:], columns=df.columns))
         df_session = pd.concat(rows, ignore_index=True)
 
     elif session_type == 'sleep':
         categories = ["active_wake", "quiet_wake", "nrem", "rem"]
         categories_t = get_sleep_categories_t(preproc_path)
-        tot_temporal_corr_evo, tot_temporal_ssim_evo, tot_spectral_slope_evo, tot_compression_gain_evo = segment_sleep_session(
+        total_metrics, total_metrics_t = segment_sleep_session(
             categories_t, timeline, 
-            temporal_corr_evo, temporal_ssim_evo, 
-            spectral_slope_evo, compression_gain_evo)
+            metrics_raw)
         rows = []
         for i in range(len(categories)):
-            new_col = np.full((len(tot_temporal_corr_evo[i]), 1), categories[i])
-            metrics = np.column_stack((tot_temporal_corr_evo[i], tot_temporal_ssim_evo[i], tot_spectral_slope_evo[i], tot_compression_gain_evo[i], new_col))
-            rows.append(pd.DataFrame(metrics, columns=df.columns))
+            new_col = np.full((len(total_metrics[i][0]), 1), categories[i])
+            metrics = np.empty(total_metrics[i][0].shape)
+            for cat_metric in total_metrics[i]:
+                metrics = np.column_stack((metrics, cat_metric))
+            metrics = np.column_stack((metrics, new_col))
+            rows.append(pd.DataFrame(metrics[:, 1:], columns=df.columns))
         df_session = pd.concat(rows, ignore_index=True)
 
     elif session_type == 'pupil':
         categories = ["0_10%", "10-30%", "30-70%", "70_100%"]
         categories_t = get_pupil_categories_t(proc_config)
-        tot_temporal_corr_evo, tot_temporal_ssim_evo, tot_spectral_slope_evo, tot_compression_gain_evo = segment_sleep_session(
+        total_metrics, total_metrics_t = segment_sleep_session(
             categories_t, timeline, 
-            temporal_corr_evo, temporal_ssim_evo, 
-            spectral_slope_evo, compression_gain_evo)
+            metrics_raw)
         rows = []
         for i in range(len(categories)):
-            new_col = np.full((len(tot_temporal_corr_evo[i]), 1), categories[i])
-            metrics = np.column_stack((tot_temporal_corr_evo[i], tot_temporal_ssim_evo[i], tot_spectral_slope_evo[i], tot_compression_gain_evo[i], new_col))
-            rows.append(pd.DataFrame(metrics, columns=df.columns))
+            new_col = np.full((len(total_metrics[i][0]), 1), categories[i])
+            metrics = np.empty(total_metrics[i][0].shape)
+            for cat_metric in total_metrics[i]:
+                metrics = np.column_stack((metrics, cat_metric))
+            metrics = np.column_stack((metrics, new_col))
+            rows.append(pd.DataFrame(metrics[:, 1:], columns=df.columns))
         df_session = pd.concat(rows, ignore_index=True)
     
     elif session_type == 'random':
-        new_col = np.full((len(temporal_corr_evo), 1), session_random_type)
-        metrics = np.column_stack((temporal_corr_evo[:, 1], temporal_ssim_evo[:, 1], spectral_slope_evo[:, 1], compression_gain_evo[:, 1], new_col))
-        rows.append(pd.DataFrame(metrics, columns=df.columns))
+        new_col = np.full((len(metrics_raw[0]), 1), session_random_type)
+        metrics = np.empty(metrics_raw[0][:, 1].shape)
+        for cat_metric in metrics_raw:
+            metrics = np.column_stack((metrics, cat_metric[:, 1]))
+        metrics = np.column_stack((metrics, new_col))
+        rows.append(pd.DataFrame(metrics[:, 1:], columns=df.columns))
         df_session = pd.concat(rows, ignore_index=True)
 
     df = pd.concat([df, df_session])
+    if session_type != 'random':
+        save_path = Path(os.path.join(proc_config.exp_directory + proc_config.animal, proc_config.session, 'reconstructions', 'plots'))
+        os.makedirs(save_path, exist_ok=True)
+        gen_whole_session_plots(save_path, metrics_used, session_type, categories, timeline, total_metrics_t, metrics_raw)
 
 for column in df.columns[:-1]:
     df[column] = df[column].astype(float)

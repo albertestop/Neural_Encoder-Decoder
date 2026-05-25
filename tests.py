@@ -24,13 +24,6 @@ from PIL import Image
 import subprocess
 import pandas as pd
 
-for i in range(1, 72):
-    
-    try:
-        cp_folds0 = f"scp -r data/experiments/train_test_020_1 uab020077@transfer1.bsc.es:/gpfs/projects/uab103/uab020077/Sensorium{i}/data/experiments"
-        subprocess.run(cp_folds0, shell=True, capture_output=True, text=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print("SCP failed:", e.returncode)
-        print("STDOUT:\n", e.stdout)
-        print("STDERR:\n", e.stderr)
+test = [0, 0, 'fdsa', True]
+print(test[1:])
 
