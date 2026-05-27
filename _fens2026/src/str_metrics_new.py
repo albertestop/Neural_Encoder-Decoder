@@ -57,7 +57,7 @@ def temporal_correlation(frames, mask):
 # 2. Temporal autocorrelation
 # ============================================================
 
-def temporal_autocorrelation(frames, mask, lag=1):
+def temporal_autocorrelation(frames, mask, lag=5):
     """
     Computes autocorrelation at a given temporal lag.
     """

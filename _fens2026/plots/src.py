@@ -148,23 +148,60 @@ def segment_sleep_session(categories_t, timeline, metrics_raw):
 
     return total_metrics, total_metrics_t
 
+def set_category_color(category):
+    if category in ['Train Trial', 'Inter Trial Period', 'Test Trial']: return 'C0'
+    elif category in ["Active Wake", "Quiet Wake", "NREM", "REM"]: return 'C1'
+    elif category in ["0-10%", "10-30% ", "30-70% ", "70_100% "]: return 'C2'
+    elif category in ['Random Neuron Order', 'Random Time', 'Random All']: return 'C3'
+    else: return 'C4'
+
+def first_of_category(category):
+    if category in ['Train Trial', "Active Wake", "0-10%", 'Random Neuron Order']: return True
+    else: return False
+
+def category_label(category):
+    if category == 'Train Trial': return 'Movie Session'
+    elif category == "Active Wake": return 'Sleep Session'
+    elif category == "0-10%": return 'Sleep Session'
+    elif category == 'Random Neuron Order': return 'Random Data'
+    else: return ''
+
+def get_title(title):
+    if title == "Temp_Corr": return 'Temporal Correlation'
+    elif title == "Temp_SSIM": return 'Temporal SSIM'
+    elif title == "Spectral_Slope": return 'Spectral Slope'
+    elif title == "Comp_Gain": return "Compression Gain"
+    elif title == "Temp_Corr_New": return 'Temporal Correlation'
+    elif title == "Temp_Autocorr": return 'Temporal Autocorrelation'
+    elif title == "Spectral_Slopoe_New": return 'Spectral Slope'
+    elif title == "Entropy": return 'Shannon Entropy'
+    elif title == "Comp_Gain_New": return 'Compression Gain'
+    elif title == "PCA_Energy": return 'PCA Energy'
+    elif title == "Frame_Predictab": return 'Frame Predictability'
+    elif title == "Temp_Diff_Energy": return 'Temporal MSE Difference'
+    elif title == "Video_Comp_Gain": return 'Video Compression Gain'
+    else: return title
+
 def plot_violin(data, categories, title, save_path):
-    fig, ax = plt.subplots(figsize=(12, 6))  # bigger figure
+    fig, ax = plt.subplots(figsize=(5, 4))  # bigger figure
 
     vp = ax.violinplot(data, showmeans=True, showextrema=False)
 
-    for body in vp['bodies']:
-        body.set_facecolor('#4C78A8')
+    for i, category, body in zip(range(len(categories)),categories, vp['bodies']):
+        color = set_category_color(category)
+        if first_of_category(category): 
+            body.set_label(category_label(category))
+        body.set_facecolor(color)
         body.set_edgecolor('black')
         body.set_alpha(0.6)
 
     ax.set_xticks(np.arange(1, len(categories) + 1))
     ax.set_xticklabels(categories, rotation=30, ha='right')  # rotate + align
-
-    ax.set_title(title)
+    ax.set_title(get_title(title))
 
     fig.tight_layout()
-
+    if title == "Frame_Predictab": plt.ylim(0, 1500)
+    plt.legend()
     plt.savefig(
         save_path / Path(f"{title}.png"),
         dpi=300,               # higher resolution
@@ -474,4 +511,5 @@ def gen_whole_session_plots(save_path, metrics_used, session_type, categories, t
         ax.plot(timeline, metric[:, 1], color='C0')
         ax.legend(loc='upper left')
         plt.savefig(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))
+        plt.close(fig)
         print(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))

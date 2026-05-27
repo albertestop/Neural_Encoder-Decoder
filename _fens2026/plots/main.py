@@ -24,11 +24,11 @@ from _fens2026.plots.src import *
 
 """
 
-sessions = ['2025-07-04_04_ESPM154_008_recons', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_06_ESPM154_007_sleep_random_neurons', '2025-07-04_06_ESPM154_007_sleep_random_time', '2025-07-04_06_ESPM154_007_sleep_random_all']#, '2025-07-04_04_ESPM154_008_recons_random_all', '2025-07-04_04_ESPM154_008_recons_random_time', '2025-07-04_04_ESPM154_008_recons_random_neurons']
+sessions = ['2025-07-04_04_ESPM154_008_recons', '2025-07-04_06_ESPM154_007_sleep', '2025-07-04_06_ESPM154_007_sleep_random_neurons', '2025-07-04_06_ESPM154_007_sleep_random_time', '2025-07-04_06_ESPM154_007_sleep_random_all']#, '2025-07-04_04_ESPM154_008_recons_random_all', '2025-07-04_04_ESPM154_008_recons_random_time', '2025-07-04_04_ESPM154_008_recons_random_neurons']
 train_session = '2025-07-04_04_ESPM154_008'
-runs = ['0', '0', '0', '1', '2', '3']#, '1', '2', '3']
-session_types = ['movie', 'sleep', 'pupil', 'random', 'random', 'random']#, 'random', 'random', 'random']
-metrics_used = ["Temp_Corr", "Temp_SSIM", "Spectral_Slope", "Comp_Gain", "Temp_Corr_New", "Temp_Autocorr", "Spectral_Slopoe_New", "Entropy", "Comp_Gain_New", "PCA_Energy", "Frame_Predictab", "Temp_Diff_Energy"]
+runs = ['0', '0', '1', '2', '3']#, '1', '2', '3']
+session_types = ['movie', 'pupil', 'random', 'random', 'random']#, 'random', 'random', 'random']
+metrics_used = ["Temp_Corr", "Temp_SSIM", "Spectral_Slope", "Comp_Gain", "Temp_Corr_New", "Temp_Autocorr", "Spectral_Slopoe_New", "Entropy", "Comp_Gain_New", "PCA_Energy", "Frame_Predictab", "Temp_Diff_Energy", "Video_Comp_Gain"]
 
 df = pd.DataFrame(columns=metrics_used + ["Category"])
 
@@ -56,6 +56,7 @@ for session, run, session_type in zip(sessions, runs, session_types):
     metrics_raw.append(np.load(str(recons_metric_path) + '/pca_energy.npy'))
     metrics_raw.append(np.load(str(recons_metric_path) + '/frame_predictab.npy'))
     metrics_raw.append(np.load(str(recons_metric_path) + '/temp_diff_energy.npy'))
+    metrics_raw.append(np.load(str(recons_metric_path) + '/video_comp_gain_evo.npy'))
 
     timeline = metrics_raw[0][:, 0]
 
@@ -70,7 +71,7 @@ for session, run, session_type in zip(sessions, runs, session_types):
         skipped_trials = ast.literal_eval(lines[0].split(": ", 1)[1].strip())
         skipped_indexes = ast.literal_eval(lines[1].split(": ", 1)[1].strip())
 
-        categories = ['seen', 'inter', 'not_seen']
+        categories = ['Train Trial', 'Inter Trial Period', 'Test Trial']
         categories_t = get_movie_categories_t(trials_df, skipped_indexes)
         total_metrics, total_metrics_t = segment_movie_session(
             categories_t, timeline, 
@@ -86,7 +87,7 @@ for session, run, session_type in zip(sessions, runs, session_types):
         df_session = pd.concat(rows, ignore_index=True)
 
     elif session_type == 'sleep':
-        categories = ["active_wake", "quiet_wake", "nrem", "rem"]
+        categories = ["Active Wake", "Quiet Wake", "NREM", "REM"]
         categories_t = get_sleep_categories_t(preproc_path)
         total_metrics, total_metrics_t = segment_sleep_session(
             categories_t, timeline, 
@@ -102,7 +103,7 @@ for session, run, session_type in zip(sessions, runs, session_types):
         df_session = pd.concat(rows, ignore_index=True)
 
     elif session_type == 'pupil':
-        categories = ["0_10%", "10-30%", "30-70%", "70_100%"]
+        categories = ["0-10%", "10-30% ", "30-70% ", "70_100% "]
         categories_t = get_pupil_categories_t(proc_config)
         total_metrics, total_metrics_t = segment_sleep_session(
             categories_t, timeline, 
@@ -118,7 +119,11 @@ for session, run, session_type in zip(sessions, runs, session_types):
         df_session = pd.concat(rows, ignore_index=True)
     
     elif session_type == 'random':
-        new_col = np.full((len(metrics_raw[0]), 1), session_random_type)
+        if session_random_type == 'random_neurons': category_name = 'Random Neuron Order'
+        elif session_random_type == 'random_time': category_name = 'Random Time'
+        elif session_random_type == 'random_all': category_name = 'Random All'
+        else: category_name = session_random_type
+        new_col = np.full((len(metrics_raw[0]), 1), category_name)
         metrics = np.empty(metrics_raw[0][:, 1].shape)
         for cat_metric in metrics_raw:
             metrics = np.column_stack((metrics, cat_metric[:, 1]))
