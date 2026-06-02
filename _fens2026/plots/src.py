@@ -201,6 +201,7 @@ def plot_violin(data, categories, title, save_path):
 
     fig.tight_layout()
     if title == "Frame_Predictab": plt.ylim(0, 1500)
+    elif title == "Video_Comp_Gain": plt.ylim(25, 55)
     plt.legend()
     plt.savefig(
         save_path / Path(f"{title}.png"),
@@ -513,3 +514,75 @@ def gen_whole_session_plots(save_path, metrics_used, session_type, categories, t
         plt.savefig(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))
         plt.close(fig)
         print(os.path.join(save_path, 'whole_session_' + metric_name + '_' + session_type + '.png'))
+
+
+def gen_proximity_matrix(df, save_path, used_metrics):
+    categories = df['Category'].unique().tolist()
+    df = df[used_metrics + ['Category']]
+
+    min_vals = df[used_metrics].min()
+    max_vals = df[used_metrics].max()
+    ranges = max_vals - min_vals
+    df[used_metrics] = (df[used_metrics] - min_vals) / ranges.replace(0, 1)
+
+    y_categories = [categories[i] for i in [0, 1, 2, 7, 8, 9]]
+    x_categories = [categories[i] for i in [3, 4, 5, 6]]
+    distances = np.zeros((len(x_categories), len(y_categories)))
+    for i, category in enumerate(x_categories):
+        category_data = df[used_metrics][df['Category'] == category].to_numpy(dtype=float)[::10]
+        category_mean_v = category_data.mean(axis=0) 
+        for j, category2 in enumerate(y_categories):
+            #if j <= i: continue
+            category2_data = df[used_metrics][df['Category'] == category2].to_numpy(dtype=float)
+            category2_mean_v = category2_data.mean(axis=0)
+            distances[i, j] = np.linalg.norm(category_mean_v - category2_mean_v)
+            """category2_data = df[used_metrics][df['Category'] == category2].to_numpy(dtype=float)[::10]
+            diff = category_data[:, None, :] - category2_data[None, :, :]      # shape (N, M, 3)
+            dists = np.linalg.norm(diff, axis=2)   # shape (N, M)
+            distances[i, j] = dists.mean()"""
+    #distances = distances + distances.T
+    fig, ax = plt.subplots(figsize=(5, 4))
+
+    im = ax.imshow(distances, vmin=0, vmax=0.3, cmap="coolwarm")
+
+    fig.colorbar(im, ax=ax)
+
+    ax.set_xticks(range(len(y_categories)))
+    ax.set_xticklabels(y_categories, rotation=45, ha='right')
+
+    ax.set_yticks(range(len(x_categories)))
+    ax.set_yticklabels(x_categories)
+
+    ax.set_title("Distance Matrix")
+
+    fig.tight_layout()
+
+    plt.savefig(save_path / Path("Distance_Matrix_Cloud_Center_Norm.png"), dpi=300, bbox_inches="tight")
+    plt.close()
+
+    for i, category in enumerate(x_categories):
+        category_data = df[used_metrics][df['Category'] == category].to_numpy(dtype=float)[::10]
+        category_mean_v = category_data.mean(axis=0) 
+        for j, category2 in enumerate(y_categories):
+            category2_data = df[used_metrics][df['Category'] == category2].to_numpy(dtype=float)[::10]
+            diff = category_data[:, None, :] - category2_data[None, :, :]      # shape (N, M, 3)
+            dists = np.linalg.norm(diff, axis=2)   # shape (N, M)
+            distances[i, j] = dists.mean()
+    fig, ax = plt.subplots(figsize=(5, 4))
+
+    im = ax.imshow(distances, vmin=0, vmax=0.3, cmap="coolwarm")
+
+    fig.colorbar(im, ax=ax)
+
+    ax.set_xticks(range(len(y_categories)))
+    ax.set_xticklabels(y_categories, rotation=45, ha='right')
+
+    ax.set_yticks(range(len(x_categories)))
+    ax.set_yticklabels(x_categories)
+
+    ax.set_title("Distance Matrix")
+
+    fig.tight_layout()
+
+    plt.savefig(save_path / Path("Distance_Matrix_Point_Mean_Norm.png"), dpi=300, bbox_inches="tight")
+    plt.close()

@@ -103,7 +103,7 @@ for session, run, session_type in zip(sessions, runs, session_types):
         df_session = pd.concat(rows, ignore_index=True)
 
     elif session_type == 'pupil':
-        categories = ["0-10%", "10-30% ", "30-70% ", "70_100% "]
+        categories = ["0-10%", "10-30% ", "30-70% ", "70-100% "]
         categories_t = get_pupil_categories_t(proc_config)
         total_metrics, total_metrics_t = segment_sleep_session(
             categories_t, timeline, 
@@ -151,3 +151,4 @@ gen_dim_reduction_plot(df, save_path)
 gen_dim_reduction_min_var_plot(df, save_path)
 gen_dim_reduction_3d_plot(df, save_path)
 gen_dim_reduction_3d_plot_min_var(df, save_path)
+gen_proximity_matrix(df, save_path, used_metrics=["Comp_Gain", "Entropy", "PCA_Energy"])
