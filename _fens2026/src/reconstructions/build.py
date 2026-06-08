@@ -7,9 +7,8 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 
-from _fens2026.src.reconstruct import *
-from _fens2026.src.build import *
-from _fens2026.src.data_loading import *
+from _fens2026.src.reconstructions.build_src import *
+from _fens2026.src.reconstructions.data_loading import *
 
 
 def recons_session(

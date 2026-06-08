@@ -24,6 +24,6 @@ from PIL import Image
 import subprocess
 import pandas as pd
 
-test = [0, 0, 'fdsa', True]
-print(test[1:])
-
+data = np.load('/home/albertestop/data/processed_data/sensorium_all_2023/2025-07-04_04_ESPM154_ws_000/data/responses.npy')
+timeline = np.load('/home/albertestop/data/processed_data/sensorium_all_2023/2025-07-04_04_ESPM154_ws_000/data/responses_timeline.npy')
+print(data.shape, timeline.shape)

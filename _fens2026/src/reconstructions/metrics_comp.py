@@ -7,9 +7,9 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 
-from _fens2026.src.str_metrics import *
-from _fens2026.src.str_metrics_new import *
-from _fens2026.src.data_loading import *
+from _fens2026.src.reconstructions.metrics_src import *
+from _fens2026.src.reconstructions.metrics_new_src import *
+from _fens2026.src.reconstructions.data_loading import *
 
 
 def fill_edge_zeros_with_mean(arr):

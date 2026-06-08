@@ -10,7 +10,7 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent.parent.parent
 sys.path.append(str(parent_dir))
 
-from _fens2026.src.reconstruct import *
+from _fens2026.src.reconstructions.build_movie_src import *
 
 
 def mask_contour_coords(mask_binary):

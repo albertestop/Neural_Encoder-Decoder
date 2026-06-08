@@ -5,9 +5,9 @@ current_dir = Path(__file__).resolve().parent
 parent_dir = current_dir.parent.parent
 sys.path.append(str(parent_dir))
 
-from _fens2026.modules.recons_study import compute_recons_metrics
-from _fens2026.modules.recons_study import compute_new_recons_metrics
-from _fens2026.modules.reconstruct_session import recons_session
+from _fens2026.src.reconstructions.metrics_comp import compute_recons_metrics
+from _fens2026.src.reconstructions.metrics_comp import compute_new_recons_metrics
+from _fens2026.src.reconstructions.build import recons_session
 
 sessions = [
     '2025-07-04_04_ESPM154_008_recons'
